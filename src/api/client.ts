@@ -1,10 +1,13 @@
 import axios from "axios";
 
 /**
- * Base URL da API.
- * No Vite, variáveis expostas ao browser precisam começar com VITE_
+ * Base URL da API (sempre string)
+ * Mantém o padrão: http://localhost:8080/api
  */
-const baseURL = import.meta.env.VITE_API_URL ?? "http://localhost:8080/api";
+const baseURL = String(import.meta.env.VITE_API_URL || "http://localhost:8080/api").replace(
+  /\/+$/,
+  ""
+);
 
 const api = axios.create({
   baseURL,
@@ -35,6 +38,15 @@ export function getApiErrorMessage(err: unknown): string {
 
   const status = err.response?.status;
   const data = err.response?.data as any;
+
+  // Spring validation (custom/global handlers variam)
+  const fieldError =
+    data?.fieldErrors?.[0]?.defaultMessage ||
+    data?.fieldErrors?.[0]?.message ||
+    data?.errors?.[0]?.defaultMessage ||
+    data?.errors?.[0]?.message;
+
+  if (fieldError) return fieldError;
 
   const message =
     data?.message ||

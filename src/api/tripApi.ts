@@ -1,14 +1,58 @@
 import api from "./client";
-import type { Trip } from "../models/Trip";
-import type { TripSummary } from "../models/TripSummary";
 
-export async function getMyTrips(page = 0, size = 20): Promise<Trip[]> {
-  const res = await api.get("/trips", { params: { page, size } });
-  return res.data.content ?? [];
+/**
+ * Estrutura que o backend retorna dentro de Page<TripResponse>
+ */
+export type TripListItem = {
+  id: number;
+  title: string;
+  destinationId: number;
+  destinationName: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+};
+
+/**
+ * Wrapper padrão do Spring Page<T>
+ */
+type PageResponse<T> = {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+};
+
+/**
+ * GET /api/trips
+ * Retorna apenas o array de trips (content)
+ */
+export async function getTrips(): Promise<TripListItem[]> {
+  const res = await api.get<PageResponse<TripListItem>>("/trips");
+  return res.data.content;
 }
 
-export async function getTripSummary(tripId: number): Promise<TripSummary> {
-  const res = await api.get(`/trips/${tripId}/summary`);
+/**
+ * Opcional — buscar uma trip específica
+ */
+export async function getTripById(id: number): Promise<TripListItem> {
+  const res = await api.get<TripListItem>(`/trips/${id}`);
   return res.data;
 }
 
+/**
+ * Opcional — criar trip
+ */
+export type CreateTripRequest = {
+  title: string;
+  destinationId: number;
+  startDate: string;
+  endDate: string;
+};
+
+export async function createTrip(payload: CreateTripRequest) {
+  const res = await api.post("/trips", payload);
+  return res.data;
+}
