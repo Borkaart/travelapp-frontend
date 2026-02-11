@@ -6,9 +6,14 @@ import { getApiErrorMessage } from "../api/client";
 type Props = {
   tripId: number;
   onBack: () => void;
+  refreshKey: number;
 };
 
-export default function TripSummaryPage({ tripId, onBack }: Props) {
+export default function TripSummary({
+  tripId,
+  onBack,
+  refreshKey,
+}: Props) {
   const [data, setData] = useState<TripSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,13 +26,11 @@ export default function TripSummaryPage({ tripId, onBack }: Props) {
       .then(setData)
       .catch((err) => setError(getApiErrorMessage(err)))
       .finally(() => setLoading(false));
-  }, [tripId]);
+  }, [tripId, refreshKey]);
 
   const remaining = useMemo(() => {
     if (!data) return 0;
-    const budgetTotal = Number((data as any).budgetTotal ?? 0);
-    const expensesTotal = Number((data as any).expensesTotal ?? 0);
-    return budgetTotal - expensesTotal;
+    return Number(data.budgetTotal ?? 0) - Number(data.expensesTotal ?? 0);
   }, [data]);
 
   if (loading) return <p>Carregando summary...</p>;
@@ -52,6 +55,7 @@ export default function TripSummaryPage({ tripId, onBack }: Props) {
       </button>
 
       <h1 style={{ marginTop: 12 }}>{data.title}</h1>
+
       <p style={{ opacity: 0.8 }}>
         {data.startDate} → {data.endDate} • {data.totalDays} dias
       </p>
@@ -78,7 +82,9 @@ function Card({ label, value }: { label: string; value: any }) {
   return (
     <div style={card}>
       <div style={{ fontSize: 12, opacity: 0.8 }}>{label}</div>
-      <div style={{ fontSize: 22, fontWeight: 700, marginTop: 6 }}>{value}</div>
+      <div style={{ fontSize: 22, fontWeight: 700, marginTop: 6 }}>
+        {value}
+      </div>
     </div>
   );
 }

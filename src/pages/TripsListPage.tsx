@@ -1,3 +1,6 @@
+console.log("TripsListPage mounted");
+
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getApiErrorMessage } from "../api/client";

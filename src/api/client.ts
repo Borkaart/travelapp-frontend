@@ -18,7 +18,7 @@ const api = axios.create({
 });
 
 function getAccessToken(): string | null {
-  return localStorage.getItem("accessToken");
+  return localStorage.getItem("accessToken") || localStorage.getItem("token");
 }
 
 api.interceptors.request.use(

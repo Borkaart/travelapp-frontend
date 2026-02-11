@@ -1,10 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import RequireAuth from "./components/RequireAuth";
-
+import TripBudgetPage from "./pages/trip/TripBudgetPage";
 import LoginPage from "./pages/LoginPage";
 import TripsListPage from "./pages/TripsListPage";
-
 import TripLayout from "./pages/trip/TripLayout";
 import TripSummaryPage from "./pages/trip/TripSummaryPage";
 import TripItineraryPage from "./pages/trip/TripItineraryPage";
@@ -15,12 +14,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ===== PUBLIC ROUTES ===== */}
+        {/* PUBLIC */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* ===== PROTECTED ROUTES ===== */}
-
-        {/* Trips list */}
+        {/* PROTECTED */}
         <Route
           path="/trips"
           element={
@@ -30,7 +27,6 @@ export default function App() {
           }
         />
 
-        {/* Trip details layout */}
         <Route
           path="/trips/:tripId"
           element={
@@ -44,9 +40,11 @@ export default function App() {
           <Route path="itinerary" element={<TripItineraryPage />} />
           <Route path="activities" element={<TripActivitiesPage />} />
           <Route path="expenses" element={<TripExpensesPage />} />
+          <Route path="budget" element={<TripBudgetPage />} />
+
         </Route>
 
-        {/* ===== DEFAULT REDIRECT ===== */}
+        {/* DEFAULT */}
         <Route path="/" element={<Navigate to="/trips" replace />} />
         <Route path="*" element={<Navigate to="/trips" replace />} />
       </Routes>

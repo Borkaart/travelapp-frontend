@@ -2,12 +2,19 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api, { getApiErrorMessage } from "../api/client";
 
+type LoginResponse = {
+  accessToken?: string;
+  token?: string;
+  jwt?: string;
+  access_token?: string;
+  tokenType?: string; // se existir
+};
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const redirectTo =
-    (location.state as any)?.from || "/trips";
+  const redirectTo = (location.state as any)?.from || "/trips";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,21 +29,32 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      const res = await api.post("/auth/login", {
-        email,
+      const res = await api.post<LoginResponse>("/auth/login", {
+        email: email.trim(),
         password,
       });
 
-      const token = res.data?.accessToken || res.data?.token;
-
-      if (!token) {
-        throw new Error("Token não recebido");
+      // DEBUG (temporário): veja exatamente o que o backend devolve
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.log("LOGIN RESPONSE:", res.data);
       }
 
+      const token =
+        res.data?.accessToken ||
+        res.data?.token ||
+        res.data?.jwt ||
+        res.data?.access_token;
+
+      if (!token) {
+        throw new Error("Token não recebido no login.");
+      }
+
+      // se o backend mandar tokenType, você poderia armazenar junto,
+      // mas como seu interceptor monta "Bearer <token>", salvamos só o token.
       localStorage.setItem("accessToken", token);
 
       navigate(redirectTo, { replace: true });
-
     } catch (err) {
       setError(getApiErrorMessage(err));
     } finally {
@@ -53,6 +71,7 @@ export default function LoginPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          autoComplete="email"
         />
 
         <input
@@ -60,6 +79,7 @@ export default function LoginPage() {
           placeholder="Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          autoComplete="current-password"
         />
 
         <button disabled={loading}>
@@ -68,9 +88,7 @@ export default function LoginPage() {
       </form>
 
       {error && (
-        <p style={{ color: "crimson", marginTop: 12 }}>
-          {error}
-        </p>
+        <p style={{ color: "crimson", marginTop: 12 }}>{error}</p>
       )}
     </div>
   );
