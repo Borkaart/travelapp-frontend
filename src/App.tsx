@@ -9,20 +9,31 @@ import TripSummaryPage from "./pages/trip/TripSummaryPage";
 import TripItineraryPage from "./pages/trip/TripItineraryPage";
 import TripActivitiesPage from "./pages/trip/TripActivitiesPage";
 import TripExpensesPage from "./pages/trip/TripExpensesPage";
+import TripCreatePage from "./pages/TripCreatePage";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* PUBLIC */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* PROTECTED */}
         <Route
           path="/trips"
           element={
             <RequireAuth>
               <TripsListPage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/trips/new"
+          element={
+            <RequireAuth>
+              <ErrorBoundary>
+                <TripCreatePage />
+              </ErrorBoundary>
             </RequireAuth>
           }
         />
@@ -41,10 +52,8 @@ export default function App() {
           <Route path="activities" element={<TripActivitiesPage />} />
           <Route path="expenses" element={<TripExpensesPage />} />
           <Route path="budget" element={<TripBudgetPage />} />
-
         </Route>
 
-        {/* DEFAULT */}
         <Route path="/" element={<Navigate to="/trips" replace />} />
         <Route path="*" element={<Navigate to="/trips" replace />} />
       </Routes>

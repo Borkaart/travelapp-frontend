@@ -11,5 +11,11 @@ export default function TripSummaryPage() {
   const tid = Number(tripId);
   if (!Number.isFinite(tid)) return <p>Trip inválida.</p>;
 
-  return <TripSummary tripId={tid} refreshKey={refreshKey} onBack={() => navigate(-1)} />;
+  return (
+    <TripSummary
+      tripId={tid}
+      refreshKey={refreshKey}
+      onBack={() => navigate(-1)}
+    />
+  );
 }

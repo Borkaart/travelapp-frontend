@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { getApiErrorMessage } from "../../api/client";
 import { getBudgetByTrip, upsertBudget } from "../../api/budgetApi";
+import { useToast } from "../../shared/toast/ToastProvider";
+
 
 type OutletCtx = { refreshKey: number; triggerRefresh: () => void };
 
@@ -12,10 +14,11 @@ export default function TripBudgetPage() {
   const outlet = useOutletContext<OutletCtx>();
   const triggerRefresh = outlet?.triggerRefresh;
 
+  const { push } = useToast();
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [total, setTotal] = useState<string>("");
   const [currency, setCurrency] = useState<string>("BRL");
 
@@ -43,22 +46,42 @@ export default function TripBudgetPage() {
   async function onSave() {
     setError(null);
     setSaving(true);
+
     try {
       const n = Number(total);
-      if (!Number.isFinite(n) || n < 0) throw new Error("Budget deve ser um número >= 0.");
 
-      const cur = currency?.trim();
+      if (!Number.isFinite(n) || n < 0) {
+        throw new Error("Budget deve ser um número >= 0.");
+      }
+
+      const cur = currency?.trim() || "BRL";
+
       await upsertBudget(tid, {
-        total: n,
-        currency: cur ? cur.toUpperCase() : undefined,
+        limitAmount: n,
+        currency: cur.toUpperCase(),
       });
 
-      // atualiza summary automaticamente
-      if (triggerRefresh) triggerRefresh();
+
+      triggerRefresh?.();
+
+
+      push({
+        kind: "success",
+        title: "Orçamento atualizado",
+        message: "Summary sincronizado.",
+      });
+
 
       await load();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : getApiErrorMessage(e));
+    } catch (e: unknown) {
+      const msg = getApiErrorMessage(e);
+      setError(msg);
+
+      push({
+        kind: "error",
+        title: "Falha ao salvar orçamento",
+        message: msg,
+      });
     } finally {
       setSaving(false);
     }

@@ -9,6 +9,7 @@ import {
   type Expense,
   type ExpenseCategory,
 } from "../../api/expenseApi";
+import { useToast } from "../../shared/toast/ToastProvider";
 
 type OutletCtx = { refreshKey: number; triggerRefresh: () => void };
 
@@ -17,6 +18,7 @@ export default function TripExpensesPage() {
   const tid = Number(tripId);
 
   const { triggerRefresh } = useOutletContext<OutletCtx>();
+  const { push } = useToast();
 
   const [items, setItems] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +84,6 @@ export default function TripExpensesPage() {
   }, [tid]);
 
   async function onSubmit() {
-    console.log("EXPENSE SUBMIT CLICKED");
     setError(null);
     setSaving(true);
 
@@ -100,8 +101,6 @@ export default function TripExpensesPage() {
         spentAt: spentAt ? `${spentAt}T00:00:00` : undefined,
       };
 
-      console.log("EXPENSE PAYLOAD:", payload);
-
       if (editing) {
         await updateExpense(editing.id, payload);
       } else {
@@ -116,11 +115,22 @@ export default function TripExpensesPage() {
       resetForm();
 
       await load();
-
-      // ✅ AUTO REFRESH SUMMARY
       triggerRefresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : getApiErrorMessage(e));
+
+      push({
+        kind: "success",
+        title: editing ? "Despesa atualizada" : "Despesa registrada",
+        message: "Summary sincronizado.",
+      });
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : getApiErrorMessage(e);
+      setError(msg);
+
+      push({
+        kind: "error",
+        title: "Falha ao salvar despesa",
+        message: msg,
+      });
     } finally {
       setSaving(false);
     }
@@ -134,11 +144,22 @@ export default function TripExpensesPage() {
     try {
       await deleteExpense(e.id);
       await load();
-
-      // ✅ AUTO REFRESH SUMMARY
       triggerRefresh();
+
+      push({
+        kind: "success",
+        title: "Despesa excluída",
+        message: "Summary sincronizado.",
+      });
     } catch (err) {
-      setError(getApiErrorMessage(err));
+      const msg = getApiErrorMessage(err);
+      setError(msg);
+
+      push({
+        kind: "error",
+        title: "Falha ao excluir despesa",
+        message: msg,
+      });
     } finally {
       setSaving(false);
     }
@@ -146,6 +167,8 @@ export default function TripExpensesPage() {
 
   if (loading) return <p>Carregando...</p>;
   if (!Number.isFinite(tid)) return <p>Trip inválida.</p>;
+
+  const isEmpty = items.length === 0;
 
   return (
     <div>
@@ -163,31 +186,48 @@ export default function TripExpensesPage() {
         <b>{total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</b>
       </div>
 
-      <ul style={{ marginTop: 12 }}>
-        {items.map((e) => (
-          <li key={e.id} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-            <div>
-              {e.title} —{" "}
-              <b>
-                {Number(e.amount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-              </b>{" "}
-              <span style={{ opacity: 0.8 }}>({e.category})</span>
-              {e.spentAt ? (
-                <span style={{ opacity: 0.7 }}> — {String(e.spentAt).slice(0, 10)}</span>
-              ) : null}
-            </div>
+      {isEmpty ? (
+        <div style={emptyBox}>
+          <div style={{ fontWeight: 700, fontSize: 16 }}>Nenhuma despesa registrada</div>
+          <div style={{ marginTop: 6, opacity: 0.85 }}>
+            Registre a primeira despesa para ver o impacto no orçamento e no Summary.
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <button type="button" onClick={openCreateModal} disabled={saving} style={primaryBtn}>
+              Adicionar primeira despesa →
+            </button>
+          </div>
+        </div>
+      ) : (
+        <ul style={{ marginTop: 12 }}>
+          {items.map((e) => (
+            <li key={e.id} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+              <div>
+                {e.title} —{" "}
+                <b>
+                  {Number(e.amount).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </b>{" "}
+                <span style={{ opacity: 0.8 }}>({e.category})</span>
+                {e.spentAt ? (
+                  <span style={{ opacity: 0.7 }}> — {String(e.spentAt).slice(0, 10)}</span>
+                ) : null}
+              </div>
 
-            <div style={{ display: "flex", gap: 8 }}>
-              <button type="button" onClick={() => openEditModal(e)} disabled={saving}>
-                Editar
-              </button>
-              <button type="button" onClick={() => onDelete(e)} disabled={saving}>
-                Excluir
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button type="button" onClick={() => openEditModal(e)} disabled={saving}>
+                  Editar
+                </button>
+                <button type="button" onClick={() => onDelete(e)} disabled={saving}>
+                  Excluir
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {open && (
         <div style={{ border: "1px solid #ddd", padding: 12, marginTop: 16, borderRadius: 8 }}>
@@ -258,3 +298,21 @@ export default function TripExpensesPage() {
     </div>
   );
 }
+
+const emptyBox: React.CSSProperties = {
+  marginTop: 16,
+  borderRadius: 14,
+  padding: 14,
+  border: "1px solid rgba(255,255,255,0.12)",
+  background: "rgba(255,255,255,0.03)",
+};
+
+const primaryBtn: React.CSSProperties = {
+  padding: "10px 12px",
+  borderRadius: 12,
+  border: "1px solid rgba(255,255,255,0.14)",
+  background: "rgba(255,255,255,0.10)",
+  color: "#e8eefc",
+  cursor: "pointer",
+  fontWeight: 700,
+};

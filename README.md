@@ -1,73 +1,173 @@
-# React + TypeScript + Vite
+# TravelApp Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend application for the TravelApp ecosystem.
 
-Currently, two official plugins are available:
+This project consumes the TravelApp REST API and provides an interactive interface for planning trips, managing expenses and tracking budget health in real time.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The focus of this frontend is not only UI — but **state synchronization with domain rules coming from the backend**.
 
-## React Compiler
+---
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+## Tech Stack
 
-## Expanding the ESLint configuration
+* React 18
+* TypeScript
+* Vite
+* React Router
+* Context API
+* Modular feature-based architecture
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Core Concepts
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+This frontend was designed to behave like a real SaaS client:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Instead of duplicating business logic in the UI, the frontend:
+
+* fetches aggregated summary from API
+* reacts to domain state changes
+* updates views automatically after mutations
+
+Example:
+
+When an expense is created →
+Budget health updates →
+Trip summary updates →
+Progress bar updates
+
+No manual refresh required.
+
+---
+
+## Features
+
+### Authentication
+
+* JWT login
+* Token persistence in localStorage
+* Automatic authenticated requests
+
+### Trips
+
+* View trips
+* Navigate between modules
+
+### Summary
+
+* Aggregated trip information
+* Budget health visualization
+* Real-time synchronization
+
+### Budget
+
+* Configure trip budget
+* Immediate UI feedback
+
+### Expenses
+
+* CRUD expenses
+* Category selection
+* Auto refresh summary
+
+---
+
+## Budget Health Visualization
+
+The UI reflects backend domain state:
+
+| Status   | Meaning |
+| -------- | ------- |
+| Healthy  | < 70%   |
+| Warning  | < 90%   |
+| Danger   | < 100%  |
+| Exceeded | > 100%  |
+
+The progress bar is a visual representation of a backend domain calculation — not a frontend estimate.
+
+---
+
+## Project Structure
+
+Feature oriented organization:
+
+```
+src/
+  app/            → providers and router
+  domain/         → shared domain contracts (budget health)
+  features/       → application modules
+      auth/
+      trips/
+      trip-summary/
+  pages/          → route screens
+  shared/         → reusable UI and utilities
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This avoids the traditional "components folder chaos".
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Running the project
+
+### 1 — Install dependencies
+
 ```
+npm install
+```
+
+### 2 — Configure API URL
+
+Create `.env`:
+
+```
+VITE_API_URL=http://localhost:8080
+```
+
+### 3 — Run
+
+```
+npm run dev
+```
+
+App runs at:
+
+```
+http://localhost:5173
+```
+
+---
+
+## Backend Dependency
+
+This app requires the TravelApp API running locally:
+
+```
+http://localhost:8080
+```
+
+---
+
+## Design Decisions
+
+* Domain state lives in backend
+* Frontend reflects backend truth
+* No duplicated calculations
+* UI reacts to mutations via refreshKey pattern
+
+This simulates real world enterprise frontends where consistency matters more than local state hacks.
+
+---
+
+## Future Improvements
+
+* React Query for caching
+* Optimistic updates
+* Offline support
+* Dark/light theme
+* Mobile responsive layout
+
+---
+
+## Author
+
+Paulo Henrique dos Anjos
