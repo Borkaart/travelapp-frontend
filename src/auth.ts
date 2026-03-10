@@ -14,7 +14,11 @@ export function clearToken() {
   localStorage.removeItem(TOKEN_KEY);
 }
 
-export function decodeJwtPayload(token: string): any | null {
+type JwtPayload = {
+  exp?: number;
+};
+
+export function decodeJwtPayload(token: string): JwtPayload | null {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
@@ -24,7 +28,11 @@ export function decodeJwtPayload(token: string): any | null {
     const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
 
     const json = atob(padded);
-    return JSON.parse(json);
+    const payload = JSON.parse(json) as unknown;
+
+    if (!payload || typeof payload !== "object") return null;
+
+    return payload as JwtPayload;
   } catch {
     return null;
   }

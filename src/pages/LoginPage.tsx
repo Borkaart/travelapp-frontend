@@ -1,31 +1,39 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api, { getApiErrorMessage } from "../api/client";
 import { setToken } from "../auth";
+import { inputSurfaceStyle, primaryButtonStyle, secondaryButtonStyle } from "../shared/ui/styles";
+import { ui } from "../shared/ui/tokens";
 
 type LoginResponse = {
   accessToken?: string;
   token?: string;
   jwt?: string;
   access_token?: string;
-  tokenType?: string;
+};
+
+type LoginLocationState = {
+  from?: string;
 };
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const redirectTo = (location.state as any)?.from || "/trips";
+  const redirectTo = (location.state as LoginLocationState | null)?.from || "/trips";
 
+  const [registerMode, setRegisterMode] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
 
     try {
       setLoading(true);
@@ -36,16 +44,35 @@ export default function LoginPage() {
       });
 
       const token =
-        res.data?.accessToken ||
-        res.data?.token ||
-        res.data?.jwt ||
-        res.data?.access_token;
+        res.data?.accessToken || res.data?.token || res.data?.jwt || res.data?.access_token;
 
-      if (!token) throw new Error("Token não recebido no login.");
+      if (!token) throw new Error("Token nao recebido no login.");
 
       setToken(token);
-
       navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setError(getApiErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function onRegister(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    try {
+      setLoading(true);
+      await api.post("/users", {
+        name: name.trim(),
+        email: email.trim(),
+        password,
+      });
+      setSuccess("Usuario criado com sucesso. Agora faca login.");
+      setRegisterMode(false);
+      setName("");
+      setPassword("");
     } catch (err) {
       setError(getApiErrorMessage(err));
     } finally {
@@ -63,32 +90,45 @@ export default function LoginPage() {
         display: "grid",
         placeItems: "center",
         padding: 24,
+        boxSizing: "border-box",
       }}
     >
       <div style={{ width: "100%", maxWidth: 440 }}>
-        {/* Brand / Title */}
         <div style={{ marginBottom: 16, textAlign: "left" }}>
-          <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 6 }}>
-            Travel App
-          </div>
+          <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 6 }}>Travel App</div>
           <h1 style={{ margin: 0, fontSize: 30, letterSpacing: -0.3 }}>
-            Entrar
+            {registerMode ? "Criar usuario" : "Entrar"}
           </h1>
           <div style={{ opacity: 0.75, marginTop: 8 }}>
-            Acesse sua conta para gerenciar suas viagens.
+            {registerMode
+              ? "Cadastre uma conta para comecar a gerenciar suas viagens."
+              : "Acesse sua conta para gerenciar suas viagens."}
           </div>
         </div>
 
-        {/* Card */}
         <div
           style={{
-            padding: 18,
-            borderRadius: 18,
+            padding: ui.space.xl,
+            borderRadius: ui.radius.xl,
             background: "rgba(255,255,255,0.03)",
             border: "1px solid rgba(255,255,255,0.08)",
           }}
         >
-          <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
+          <form onSubmit={registerMode ? onRegister : onSubmit} style={{ display: "grid", gap: ui.space.md }}>
+            {registerMode ? (
+              <label style={{ display: "grid", gap: 6 }}>
+                <span style={{ fontSize: 13, opacity: 0.75 }}>Nome</span>
+                <input
+                  placeholder="Seu nome"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete="name"
+                  disabled={loading}
+                  style={inputStyle}
+                />
+              </label>
+            ) : null}
+
             <label style={{ display: "grid", gap: 6 }}>
               <span style={{ fontSize: 13, opacity: 0.75 }}>Email</span>
               <input
@@ -97,14 +137,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
                 disabled={loading}
-                style={{
-                  padding: "12px 12px",
-                  borderRadius: 12,
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  background: "rgba(0,0,0,0.35)",
-                  color: "#fff",
-                  outline: "none",
-                }}
+                style={inputStyle}
               />
             </label>
 
@@ -112,19 +145,12 @@ export default function LoginPage() {
               <span style={{ fontSize: 13, opacity: 0.75 }}>Senha</span>
               <input
                 type="password"
-                placeholder="••••••••"
+                placeholder="********"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
+                autoComplete={registerMode ? "new-password" : "current-password"}
                 disabled={loading}
-                style={{
-                  padding: "12px 12px",
-                  borderRadius: 12,
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  background: "rgba(0,0,0,0.35)",
-                  color: "#fff",
-                  outline: "none",
-                }}
+                style={inputStyle}
               />
             </label>
 
@@ -132,21 +158,35 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               style={{
+                ...primaryButtonStyle(),
                 marginTop: 4,
                 padding: "12px 14px",
-                borderRadius: 12,
-                border: "1px solid rgba(74,222,128,0.35)",
                 background: loading ? "rgba(74,222,128,0.10)" : "rgba(74,222,128,0.18)",
-                color: "#CFFFE0",
                 fontWeight: 800,
                 cursor: loading ? "not-allowed" : "pointer",
               }}
             >
-              {loading ? "Entrando..." : "Entrar"}
+              {loading ? (registerMode ? "Criando..." : "Entrando...") : registerMode ? "Criar usuario" : "Entrar"}
+            </button>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => {
+                setRegisterMode((current) => !current);
+                setError(null);
+                setSuccess(null);
+              }}
+              style={{
+                ...secondaryButtonStyle(),
+                padding: "12px 14px",
+              }}
+            >
+              {registerMode ? "Voltar para login" : "Criar novo usuario"}
             </button>
           </form>
 
-          {error && (
+          {error ? (
             <div
               style={{
                 marginTop: 12,
@@ -159,13 +199,32 @@ export default function LoginPage() {
             >
               {error}
             </div>
-          )}
+          ) : null}
+
+          {success ? (
+            <div
+              style={{
+                marginTop: 12,
+                padding: 12,
+                borderRadius: 12,
+                background: "rgba(74,222,128,0.12)",
+                border: "1px solid rgba(74,222,128,0.30)",
+                color: "#d9ffe9",
+              }}
+            >
+              {success}
+            </div>
+          ) : null}
         </div>
 
         <div style={{ marginTop: 12, opacity: 0.55, fontSize: 12 }}>
-          Dica: use as mesmas credenciais do seu backend (Spring Security).
+          Dica: use as mesmas credenciais do backend.
         </div>
       </div>
     </div>
   );
 }
+
+const inputStyle: React.CSSProperties = {
+  ...inputSurfaceStyle(),
+};

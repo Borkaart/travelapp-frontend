@@ -7,7 +7,6 @@ import TripsListPage from "./pages/TripsListPage";
 import TripLayout from "./pages/trip/TripLayout";
 import TripSummaryPage from "./pages/trip/TripSummaryPage";
 import TripItineraryPage from "./pages/trip/TripItineraryPage";
-import TripActivitiesPage from "./pages/trip/TripActivitiesPage";
 import TripExpensesPage from "./pages/trip/TripExpensesPage";
 import TripCreatePage from "./pages/TripCreatePage";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -49,13 +48,13 @@ export default function App() {
           <Route index element={<Navigate to="summary" replace />} />
           <Route path="summary" element={<TripSummaryPage />} />
           <Route path="itinerary" element={<TripItineraryPage />} />
-          <Route path="activities" element={<TripActivitiesPage />} />
+          <Route path="activities" element={<Navigate to="../itinerary" replace />} />
           <Route path="expenses" element={<TripExpensesPage />} />
           <Route path="budget" element={<TripBudgetPage />} />
         </Route>
 
-        <Route path="/" element={<Navigate to="/trips" replace />} />
-        <Route path="*" element={<Navigate to="/trips" replace />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

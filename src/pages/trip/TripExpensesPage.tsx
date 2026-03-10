@@ -6,10 +6,18 @@ import {
   deleteExpense,
   getExpensesByTrip,
   updateExpense,
+  type CreateExpenseRequest,
   type Expense,
   type ExpenseCategory,
+  type UpdateExpenseRequest,
 } from "../../api/expenseApi";
-import { useToast } from "../../shared/toast/ToastProvider";
+import {
+  elevatedInputStyle,
+  ghostButtonStyle,
+  primaryButtonStyle,
+} from "../../shared/ui/styles";
+import { ui } from "../../shared/ui/tokens";
+import { useToast } from "../../shared/toast/toast";
 
 type OutletCtx = { refreshKey: number; triggerRefresh: () => void };
 
@@ -28,15 +36,12 @@ export default function TripExpensesPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
 
-  // Form
   const [title, setTitle] = useState("");
-  const [amount, setAmount] = useState<string>("");
-  const [spentAt, setSpentAt] = useState<string>(""); // yyyy-MM-dd
+  const [amount, setAmount] = useState("");
+  const [spentAt, setSpentAt] = useState("");
   const [category, setCategory] = useState<ExpenseCategory>("TRANSPORT");
 
-  const total = useMemo(() => {
-    return items.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
-  }, [items]);
+  const total = useMemo(() => items.reduce((acc, item) => acc + (Number(item.amount) || 0), 0), [items]);
 
   function resetForm() {
     setTitle("");
@@ -51,52 +56,55 @@ export default function TripExpensesPage() {
     setOpen(true);
   }
 
-  function openEditModal(e: Expense) {
-    setEditing(e);
-    setTitle(e.title ?? "");
-    setAmount(e.amount !== null && e.amount !== undefined ? String(e.amount) : "");
-    setCategory(e.category);
-
-    const raw = (e.spentAt as any) ?? "";
-    setSpentAt(raw ? String(raw).slice(0, 10) : "");
-
+  function openEditModal(expense: Expense) {
+    setEditing(expense);
+    setTitle(expense.title ?? "");
+    setAmount(expense.amount != null ? String(expense.amount) : "");
+    setCategory(expense.category);
+    setSpentAt(expense.spentAt ? String(expense.spentAt).slice(0, 10) : "");
     setOpen(true);
   }
 
-  async function load() {
+  useEffect(() => {
     if (!Number.isFinite(tid)) return;
 
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getExpensesByTrip(tid);
-      setItems(data);
-    } catch (e) {
-      setError(getApiErrorMessage(e));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getExpensesByTrip(tid);
+        setItems(data);
+      } catch (e) {
+        setError(getApiErrorMessage(e));
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [tid]);
+
+  async function reload() {
+    if (!Number.isFinite(tid)) return;
+
+    const data = await getExpensesByTrip(tid);
+    setItems(data);
+  }
 
   async function onSubmit() {
     setError(null);
     setSaving(true);
 
     try {
-      const t = title.trim();
-      if (!t) throw new Error("Descrição é obrigatória.");
+      const trimmedTitle = title.trim();
+      if (!trimmedTitle) throw new Error("Descricao e obrigatoria.");
 
-      const n = Number(amount);
-      if (!Number.isFinite(n) || n <= 0) throw new Error("Valor deve ser maior que zero.");
+      const parsedAmount = Number(amount);
+      if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+        throw new Error("Valor deve ser maior que zero.");
+      }
 
-      const payload: any = {
-        title: t,
-        amount: n,
+      const payload: UpdateExpenseRequest = {
+        title: trimmedTitle,
+        amount: parsedAmount,
         category,
         spentAt: spentAt ? `${spentAt}T00:00:00` : undefined,
       };
@@ -104,17 +112,22 @@ export default function TripExpensesPage() {
       if (editing) {
         await updateExpense(editing.id, payload);
       } else {
-        await createExpense({
+        const createPayload: CreateExpenseRequest = {
           tripId: tid,
-          ...payload,
-        });
+          title: trimmedTitle,
+          amount: parsedAmount,
+          category,
+          spentAt: payload.spentAt,
+        };
+
+        await createExpense(createPayload);
       }
 
       setOpen(false);
       setEditing(null);
       resetForm();
 
-      await load();
+      await reload();
       triggerRefresh();
 
       push({
@@ -136,19 +149,19 @@ export default function TripExpensesPage() {
     }
   }
 
-  async function onDelete(e: Expense) {
+  async function onDelete(expense: Expense) {
     setError(null);
-    if (!confirm(`Excluir despesa "${e.title}"?`)) return;
+    if (!confirm(`Excluir despesa "${expense.title}"?`)) return;
 
     setSaving(true);
     try {
-      await deleteExpense(e.id);
-      await load();
+      await deleteExpense(expense.id);
+      await reload();
       triggerRefresh();
 
       push({
         kind: "success",
-        title: "Despesa excluída",
+        title: "Despesa excluida",
         message: "Summary sincronizado.",
       });
     } catch (err) {
@@ -166,22 +179,22 @@ export default function TripExpensesPage() {
   }
 
   if (loading) return <p>Carregando...</p>;
-  if (!Number.isFinite(tid)) return <p>Trip inválida.</p>;
+  if (!Number.isFinite(tid)) return <p>Trip invalida.</p>;
 
   const isEmpty = items.length === 0;
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h3>Expenses</h3>
-        <button type="button" onClick={openCreateModal} disabled={saving}>
+    <div style={{ minHeight: "100%", display: "grid", alignContent: "start", gap: ui.space.lg }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <h3 style={{ margin: 0 }}>Expenses</h3>
+        <button type="button" onClick={openCreateModal} disabled={saving} style={primaryBtn}>
           + Adicionar
         </button>
       </div>
 
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+      {error ? <p style={{ color: "crimson", margin: 0 }}>{error}</p> : null}
 
-      <div style={{ marginTop: 8, opacity: 0.85 }}>
+      <div style={{ opacity: 0.85 }}>
         Total:{" "}
         <b>{total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</b>
       </div>
@@ -190,37 +203,37 @@ export default function TripExpensesPage() {
         <div style={emptyBox}>
           <div style={{ fontWeight: 700, fontSize: 16 }}>Nenhuma despesa registrada</div>
           <div style={{ marginTop: 6, opacity: 0.85 }}>
-            Registre a primeira despesa para ver o impacto no orçamento e no Summary.
+            Registre a primeira despesa para ver o impacto no orcamento e no Summary.
           </div>
           <div style={{ marginTop: 12 }}>
             <button type="button" onClick={openCreateModal} disabled={saving} style={primaryBtn}>
-              Adicionar primeira despesa →
+              Adicionar primeira despesa
             </button>
           </div>
         </div>
       ) : (
-        <ul style={{ marginTop: 12 }}>
-          {items.map((e) => (
-            <li key={e.id} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+        <ul style={{ marginTop: 12, paddingLeft: 18 }}>
+          {items.map((expense) => (
+            <li key={expense.id} style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
               <div>
-                {e.title} —{" "}
+                {expense.title} -{" "}
                 <b>
-                  {Number(e.amount).toLocaleString("pt-BR", {
+                  {Number(expense.amount).toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
                 </b>{" "}
-                <span style={{ opacity: 0.8 }}>({e.category})</span>
-                {e.spentAt ? (
-                  <span style={{ opacity: 0.7 }}> — {String(e.spentAt).slice(0, 10)}</span>
+                <span style={{ opacity: 0.8 }}>({expense.category})</span>
+                {expense.spentAt ? (
+                  <span style={{ opacity: 0.7 }}> - {String(expense.spentAt).slice(0, 10)}</span>
                 ) : null}
               </div>
 
-              <div style={{ display: "flex", gap: 8 }}>
-                <button type="button" onClick={() => openEditModal(e)} disabled={saving}>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button type="button" onClick={() => openEditModal(expense)} disabled={saving} style={ghostButtonStyle()}>
                   Editar
                 </button>
-                <button type="button" onClick={() => onDelete(e)} disabled={saving}>
+                <button type="button" onClick={() => onDelete(expense)} disabled={saving} style={ghostButtonStyle()}>
                   Excluir
                 </button>
               </div>
@@ -229,9 +242,18 @@ export default function TripExpensesPage() {
         </ul>
       )}
 
-      {open && (
-        <div style={{ border: "1px solid #ddd", padding: 12, marginTop: 16, borderRadius: 8 }}>
-          <h4>{editing ? "Editar Despesa" : "Nova Despesa"}</h4>
+      {open ? (
+        <div
+          style={{
+            border: "1px solid rgba(255,255,255,0.10)",
+            padding: ui.space.xl,
+            marginTop: 16,
+            borderRadius: ui.radius.xl,
+            background: "rgba(255,255,255,0.04)",
+            maxWidth: 520,
+          }}
+        >
+          <h4 style={{ marginTop: 0 }}>{editing ? "Editar Despesa" : "Nova Despesa"}</h4>
 
           <div style={{ display: "grid", gap: 8, maxWidth: 520 }}>
             <label>
@@ -240,6 +262,7 @@ export default function TripExpensesPage() {
                 value={category}
                 onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
                 disabled={saving}
+                style={elevatedInputStyle()}
               >
                 <option value="FOOD">Food</option>
                 <option value="TRANSPORT">Transport</option>
@@ -251,8 +274,8 @@ export default function TripExpensesPage() {
             </label>
 
             <label>
-              Descrição
-              <input value={title} onChange={(e) => setTitle(e.target.value)} disabled={saving} />
+              Descricao
+              <input value={title} onChange={(e) => setTitle(e.target.value)} disabled={saving} style={elevatedInputStyle()} />
             </label>
 
             <label>
@@ -263,6 +286,7 @@ export default function TripExpensesPage() {
                 inputMode="decimal"
                 placeholder="ex: 100.50"
                 disabled={saving}
+                style={elevatedInputStyle()}
               />
             </label>
 
@@ -273,11 +297,12 @@ export default function TripExpensesPage() {
                 value={spentAt}
                 onChange={(e) => setSpentAt(e.target.value)}
                 disabled={saving}
+                style={elevatedInputStyle()}
               />
             </label>
 
-            <div style={{ display: "flex", gap: 8 }}>
-              <button type="button" onClick={onSubmit} disabled={saving}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button type="button" onClick={onSubmit} disabled={saving} style={primaryBtn}>
                 {saving ? "Salvando..." : "Salvar"}
               </button>
               <button
@@ -288,31 +313,29 @@ export default function TripExpensesPage() {
                   setEditing(null);
                   resetForm();
                 }}
+                style={ghostButtonStyle()}
               >
                 Cancelar
               </button>
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
 
 const emptyBox: React.CSSProperties = {
   marginTop: 16,
-  borderRadius: 14,
-  padding: 14,
+  borderRadius: ui.radius.lg,
+  padding: ui.space.lg,
   border: "1px solid rgba(255,255,255,0.12)",
   background: "rgba(255,255,255,0.03)",
 };
 
 const primaryBtn: React.CSSProperties = {
-  padding: "10px 12px",
-  borderRadius: 12,
+  ...primaryButtonStyle(),
   border: "1px solid rgba(255,255,255,0.14)",
   background: "rgba(255,255,255,0.10)",
   color: "#e8eefc",
-  cursor: "pointer",
-  fontWeight: 700,
 };

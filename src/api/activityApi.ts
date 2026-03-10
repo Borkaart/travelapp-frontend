@@ -12,6 +12,7 @@ export type ActivityType =
 export type Activity = {
   id: number;
   itineraryDayId: number;
+  sortOrder?: number | null;
   type: ActivityType;
   title: string;
   place?: string | null;
@@ -48,6 +49,14 @@ export async function getActivitiesByItineraryDay(itineraryDayId: number): Promi
 
 export async function createActivity(payload: ActivityCreateRequest): Promise<Activity> {
   const res = await api.post<Activity>("/activities", payload);
+  return res.data;
+}
+
+export async function reorderActivities(payload: {
+  itineraryDayId: number;
+  activityIds: number[];
+}): Promise<Activity[]> {
+  const res = await api.post<Activity[]>("/activities/reorder", payload);
   return res.data;
 }
 

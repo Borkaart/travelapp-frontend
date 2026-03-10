@@ -1,27 +1,58 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { clearToken } from "../../auth";
+import { getTripById, type TripListItem } from "../../api/tripApi";
+import { buildBackgroundStyle } from "../../features/trips/backgrounds";
+import { useMediaQuery } from "../../shared/hooks/useMediaQuery";
+import { ui } from "../../shared/ui/tokens";
 
+export type TripOutletContext = {
+  refreshKey: number;
+  triggerRefresh: () => void;
+  trip: TripListItem | null;
+};
 
 export default function TripLayout() {
   const { tripId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const numericTripId = Number(tripId);
+  const isNarrow = useMediaQuery("(max-width: 720px)");
 
   const [refreshKey, setRefreshKey] = useState(0);
+  const [trip, setTrip] = useState<TripListItem | null>(null);
 
   function triggerRefresh() {
     setRefreshKey((k) => k + 1);
   }
 
-  // deixa "summary" como default visual quando cair em /trips/:tripId
+  useEffect(() => {
+    if (!Number.isFinite(numericTripId)) return;
+
+    let alive = true;
+
+    getTripById(numericTripId)
+      .then((data) => {
+        if (!alive) return;
+        setTrip(data);
+      })
+      .catch(() => {
+        if (!alive) return;
+        setTrip(null);
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, [numericTripId]);
+
   const currentTab = useMemo(() => {
     const p = location.pathname;
     if (p.endsWith(`/trips/${tripId}`) || p.endsWith(`/trips/${tripId}/`)) return "summary";
     if (p.includes("/summary")) return "summary";
     if (p.includes("/budget")) return "budget";
     if (p.includes("/itinerary")) return "itinerary";
-    if (p.includes("/activities")) return "activities";
+    if (p.includes("/activities")) return "itinerary";
     if (p.includes("/expenses")) return "expenses";
     return "";
   }, [location.pathname, tripId]);
@@ -30,8 +61,8 @@ export default function TripLayout() {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "10px 12px",
-    borderRadius: 10,
+    padding: isNarrow ? "12px 14px" : "10px 12px",
+    borderRadius: ui.radius.sm,
     fontSize: 14,
     fontWeight: 600,
     textDecoration: "none",
@@ -40,29 +71,44 @@ export default function TripLayout() {
     color: isActive ? "#ffffff" : "rgba(255,255,255,0.80)",
     transition: "all 120ms ease",
     cursor: "pointer",
+    minHeight: ui.controlHeight.md,
+    flex: isNarrow ? "1 1 140px" : undefined,
   });
 
   return (
     <div
       style={{
+        ...buildBackgroundStyle(trip?.destinationImageUrl),
         minHeight: "100vh",
-        background: "radial-gradient(1200px 600px at 20% 0%, #2a2a2a 0%, #141414 60%, #0f0f0f 100%)",
-        color: "#fff",
       }}
     >
-      {/* Container central (resolve o “vazio” em telas grandes) */}
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px" }}>
-        {/* Header */}
+      <div
+        style={{
+          maxWidth: 1100,
+          margin: "0 auto",
+          padding: isNarrow ? `${ui.space.xl}px ${ui.space.lg}px 28px` : `28px ${ui.space.xxl}px`,
+          minHeight: "100vh",
+          boxSizing: "border-box",
+        }}
+      >
         <div
           style={{
             display: "flex",
-            alignItems: "center",
+            alignItems: isNarrow ? "flex-start" : "center",
             justifyContent: "space-between",
             gap: 16,
             marginBottom: 14,
+            flexWrap: "wrap",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: isNarrow ? "flex-start" : "center",
+              gap: 12,
+              flexWrap: "wrap",
+            }}
+          >
             <button
               type="button"
               onClick={() => {
@@ -78,37 +124,49 @@ export default function TripLayout() {
               onClick={() => navigate("/trips")}
               style={{
                 padding: "10px 12px",
-                borderRadius: 12,
+                borderRadius: ui.radius.md,
                 border: "1px solid #2c2c2c",
                 background: "#161616",
                 color: "rgba(255,255,255,0.9)",
                 cursor: "pointer",
+                minHeight: ui.controlHeight.md,
               }}
             >
-              ← Voltar
+              &lt;- Voltar
             </button>
 
             <div>
               <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 2 }}>Trip</div>
-              <h2 style={{ margin: 0, fontSize: 22, letterSpacing: -0.2 }}>#{tripId}</h2>
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: isNarrow ? 20 : 22,
+                  letterSpacing: -0.2,
+                  wordBreak: "break-word",
+                }}
+              >
+                {trip?.title ?? `#${tripId}`}
+              </h2>
+              {trip?.destinationName ? (
+                <div style={{ fontSize: 13, opacity: 0.72, marginTop: 4 }}>{trip.destinationName}</div>
+              ) : null}
             </div>
           </div>
 
-          {/* espaço para ações futuras (Logout, Share etc.) */}
           <div style={{ display: "flex", gap: 10 }} />
         </div>
 
-        {/* Tabs (estilo app, não “links azuis”) */}
         <div
           style={{
             display: "flex",
-            gap: 8,
+            gap: ui.space.sm,
             flexWrap: "wrap",
-            padding: 8,
-            borderRadius: 14,
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            width: "fit-content",
+            padding: ui.space.sm,
+            borderRadius: ui.radius.lg,
+            background: "rgba(4,12,24,0.38)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            backdropFilter: "blur(12px)",
+            width: isNarrow ? "100%" : "fit-content",
             marginBottom: 18,
           }}
         >
@@ -124,25 +182,24 @@ export default function TripLayout() {
             Itinerary
           </NavLink>
 
-          <NavLink to="activities" style={({ isActive }) => tabStyle(isActive || currentTab === "activities")}>
-            Activities
-          </NavLink>
-
           <NavLink to="expenses" style={({ isActive }) => tabStyle(isActive || currentTab === "expenses")}>
             Expenses
           </NavLink>
         </div>
 
-        {/* Conteúdo */}
         <div
           style={{
-            padding: 18,
-            borderRadius: 18,
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.07)",
+            padding: ui.space.xl,
+            borderRadius: ui.radius.xl,
+            background: "rgba(4,12,24,0.40)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            backdropFilter: "blur(14px)",
+            overflow: "hidden",
+            minHeight: "calc(100vh - 190px)",
+            boxSizing: "border-box",
           }}
         >
-          <Outlet context={{ refreshKey, triggerRefresh }} />
+          <Outlet context={{ refreshKey, triggerRefresh, trip } satisfies TripOutletContext} />
         </div>
       </div>
     </div>

@@ -7,19 +7,13 @@ import {
   getActivitiesByItineraryDay,
   updateActivity,
   type Activity,
+  type ActivityCreateRequest,
+  type ActivityType,
+  type ActivityUpdateRequest,
 } from "../../api/activityApi";
 import { getItineraryDaysByTrip, type ItineraryDay } from "../../api/itineraryDayApi";
 
 type OutletCtx = { refreshKey: number; triggerRefresh: () => void };
-
-type ActivityType =
-  | "SIGHTSEEING"
-  | "FOOD"
-  | "TRANSPORT"
-  | "HOTEL"
-  | "TOUR"
-  | "SHOPPING"
-  | "OTHER";
 
 export default function TripActivitiesPage() {
   const { tripId } = useParams();
@@ -39,9 +33,8 @@ export default function TripActivitiesPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Activity | null>(null);
 
-  // form
   const [type, setType] = useState<ActivityType>("FOOD");
-  const [time, setTime] = useState(""); // "HH:mm"
+  const [time, setTime] = useState("");
   const [place, setPlace] = useState("");
   const [notes, setNotes] = useState("");
   const [title, setTitle] = useState("");
@@ -62,56 +55,33 @@ export default function TripActivitiesPage() {
     setOpen(true);
   }
 
-  function openEditModal(a: Activity) {
-    setEditing(a);
-
-    setType(a.type as ActivityType);
-    setTitle(a.title ?? "");
-    setPlace((a as any).place ?? "");
-    setNotes((a as any).notes ?? "");
-
-    const t = (a as any).time;
-    setTime(t ? String(t).slice(0, 5) : ""); // "HH:mm:ss" -> "HH:mm"
-
-    const c = (a as any).cost;
-    setCost(c !== null && c !== undefined ? String(c) : "");
-
+  function openEditModal(activity: Activity) {
+    setEditing(activity);
+    setType(activity.type);
+    setTitle(activity.title ?? "");
+    setPlace(activity.place ?? "");
+    setNotes(activity.notes ?? "");
+    setTime(activity.time ? String(activity.time).slice(0, 5) : "");
+    setCost(activity.cost != null ? String(activity.cost) : "");
     setOpen(true);
   }
 
-  async function loadDays() {
+  useEffect(() => {
     if (!Number.isFinite(tid)) return;
 
-    setLoading(true);
-    setError(null);
-    try {
-      const d = await getItineraryDaysByTrip(tid);
-      setDays(d);
-      if (d.length > 0) setSelectedDayId(d[0].id);
-      else setSelectedDayId("");
-    } catch (e) {
-      setError(getApiErrorMessage(e));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function loadActivities(itineraryDayId: number) {
-    setLoadingActivities(true);
-    setError(null);
-    try {
-      const a = await getActivitiesByItineraryDay(itineraryDayId);
-      setItems(a);
-    } catch (e) {
-      setError(getApiErrorMessage(e));
-    } finally {
-      setLoadingActivities(false);
-    }
-  }
-
-  useEffect(() => {
-    loadDays();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getItineraryDaysByTrip(tid);
+        setDays(data);
+        setSelectedDayId(data.length > 0 ? data[0].id : "");
+      } catch (e) {
+        setError(getApiErrorMessage(e));
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [tid]);
 
   useEffect(() => {
@@ -119,52 +89,69 @@ export default function TripActivitiesPage() {
       setItems([]);
       return;
     }
-    loadActivities(selectedDayId as number);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    (async () => {
+      setLoadingActivities(true);
+      setError(null);
+      try {
+        const data = await getActivitiesByItineraryDay(selectedDayId);
+        setItems(data);
+      } catch (e) {
+        setError(getApiErrorMessage(e));
+      } finally {
+        setLoadingActivities(false);
+      }
+    })();
   }, [selectedDayId]);
 
+  async function reloadActivities(dayId: number) {
+    const data = await getActivitiesByItineraryDay(dayId);
+    setItems(data);
+  }
+
   async function onSubmit() {
-    console.log("ACTIVITY SUBMIT CLICKED");
     setError(null);
     setSaving(true);
 
     try {
-      if (!title.trim()) throw new Error("Título é obrigatório.");
+      if (!title.trim()) throw new Error("Titulo e obrigatorio.");
       if (selectedDayId === "") throw new Error("Selecione um dia.");
 
-      const payload: any = {
+      const payload: ActivityUpdateRequest = {
         title: title.trim(),
         type,
+        place: place.trim() || undefined,
+        notes: notes.trim() || undefined,
+        time: time || undefined,
       };
 
-      if (place.trim()) payload.place = place.trim();
-      if (notes.trim()) payload.notes = notes.trim();
-      if (time) payload.time = time;
-
       if (cost !== "") {
-        const n = Number(cost);
-        if (!Number.isFinite(n) || n < 0) throw new Error("Custo inválido.");
-        payload.cost = n;
+        const parsedCost = Number(cost);
+        if (!Number.isFinite(parsedCost) || parsedCost < 0) throw new Error("Custo invalido.");
+        payload.cost = parsedCost;
       }
-
-      console.log("ACTIVITY PAYLOAD:", payload);
 
       if (editing) {
         await updateActivity(editing.id, payload);
       } else {
-        await createActivity({
-          ...payload,
-          itineraryDayId: selectedDayId as number,
-        });
+        const createPayload: ActivityCreateRequest = {
+          itineraryDayId: selectedDayId,
+          title: title.trim(),
+          type,
+          place: payload.place,
+          notes: payload.notes,
+          time: payload.time,
+          cost: payload.cost,
+        };
+
+        await createActivity(createPayload);
       }
 
       setOpen(false);
       setEditing(null);
       resetForm();
 
-      await loadActivities(selectedDayId as number);
-
-      // ✅ AUTO REFRESH SUMMARY
+      await reloadActivities(selectedDayId);
       triggerRefresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : getApiErrorMessage(e));
@@ -173,19 +160,18 @@ export default function TripActivitiesPage() {
     }
   }
 
-  async function onDelete(a: Activity) {
+  async function onDelete(activity: Activity) {
     setError(null);
-    if (!confirm(`Excluir "${a.title}"?`)) return;
+    if (!confirm(`Excluir "${activity.title}"?`)) return;
 
     setSaving(true);
     try {
-      await deleteActivity(a.id);
+      await deleteActivity(activity.id);
 
       if (selectedDayId !== "") {
-        await loadActivities(selectedDayId as number);
+        await reloadActivities(selectedDayId);
       }
 
-      // ✅ AUTO REFRESH SUMMARY
       triggerRefresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : getApiErrorMessage(e));
@@ -195,7 +181,7 @@ export default function TripActivitiesPage() {
   }
 
   if (loading) return <p>Carregando...</p>;
-  if (!Number.isFinite(tid)) return <p>Trip inválida.</p>;
+  if (!Number.isFinite(tid)) return <p>Trip invalida.</p>;
 
   return (
     <div>
@@ -217,9 +203,9 @@ export default function TripActivitiesPage() {
             disabled={days.length === 0 || saving}
           >
             {days.length === 0 && <option value="">Nenhum dia cadastrado</option>}
-            {days.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.date} (id {d.id})
+            {days.map((day) => (
+              <option key={day.id} value={day.id}>
+                {day.date} (id {day.id})
               </option>
             ))}
           </select>
@@ -227,7 +213,7 @@ export default function TripActivitiesPage() {
 
         <button
           type="button"
-          onClick={() => selectedDayId !== "" && loadActivities(selectedDayId as number)}
+          onClick={() => selectedDayId !== "" && reloadActivities(selectedDayId)}
           disabled={selectedDayId === "" || loadingActivities || saving}
         >
           Recarregar
@@ -238,40 +224,33 @@ export default function TripActivitiesPage() {
         <p>Carregando...</p>
       ) : (
         <ul>
-          {items.map((a) => {
-            const placeV = (a as any).place;
-            const notesV = (a as any).notes;
-            const timeV = (a as any).time;
-            const costV = (a as any).cost;
-
-            return (
-              <li key={a.id} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                <div>
-                  <b>{a.title}</b> <span style={{ opacity: 0.8 }}>({a.type})</span>
-                  {placeV ? <div style={{ opacity: 0.85 }}>{placeV}</div> : null}
-                  {notesV ? <div style={{ opacity: 0.75 }}>{notesV}</div> : null}
-                  <div style={{ opacity: 0.75 }}>
-                    {timeV ? `⏰ ${String(timeV).slice(0, 5)}` : ""}
-                    {costV !== null && costV !== undefined
-                      ? ` • 💰 ${Number(costV).toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}`
-                      : ""}
-                  </div>
+          {items.map((activity) => (
+            <li key={activity.id} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+              <div>
+                <b>{activity.title}</b> <span style={{ opacity: 0.8 }}>({activity.type})</span>
+                {activity.place ? <div style={{ opacity: 0.85 }}>{activity.place}</div> : null}
+                {activity.notes ? <div style={{ opacity: 0.75 }}>{activity.notes}</div> : null}
+                <div style={{ opacity: 0.75 }}>
+                  {activity.time ? `Hora ${String(activity.time).slice(0, 5)}` : ""}
+                  {activity.cost != null
+                    ? ` - ${Number(activity.cost).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}`
+                    : ""}
                 </div>
+              </div>
 
-                <div style={{ display: "flex", gap: 8 }}>
-                  <button type="button" onClick={() => openEditModal(a)} disabled={saving}>
-                    Editar
-                  </button>
-                  <button type="button" onClick={() => onDelete(a)} disabled={saving}>
-                    Excluir
-                  </button>
-                </div>
-              </li>
-            );
-          })}
+              <div style={{ display: "flex", gap: 8 }}>
+                <button type="button" onClick={() => openEditModal(activity)} disabled={saving}>
+                  Editar
+                </button>
+                <button type="button" onClick={() => onDelete(activity)} disabled={saving}>
+                  Excluir
+                </button>
+              </div>
+            </li>
+          ))}
         </ul>
       )}
 
@@ -282,8 +261,8 @@ export default function TripActivitiesPage() {
           <div style={{ display: "grid", gap: 8, maxWidth: 520 }}>
             {!editing && (
               <div style={{ opacity: 0.8 }}>
-                Será criada no dia:{" "}
-                <b>{days.find((d) => d.id === selectedDayId)?.date ?? "(selecione um dia)"}</b>
+                Sera criada no dia:{" "}
+                <b>{days.find((day) => day.id === selectedDayId)?.date ?? "(selecione um dia)"}</b>
               </div>
             )}
 
@@ -305,7 +284,7 @@ export default function TripActivitiesPage() {
             </label>
 
             <label>
-              Título
+              Titulo
               <input value={title} onChange={(e) => setTitle(e.target.value)} disabled={saving} />
             </label>
 
@@ -315,12 +294,12 @@ export default function TripActivitiesPage() {
             </label>
 
             <label>
-              Observações (opcional)
+              Observacoes (opcional)
               <input value={notes} onChange={(e) => setNotes(e.target.value)} disabled={saving} />
             </label>
 
             <label>
-              Horário (opcional)
+              Horario (opcional)
               <input
                 type="time"
                 value={time}

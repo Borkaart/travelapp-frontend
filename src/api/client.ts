@@ -1,7 +1,24 @@
-import axios from "axios";
+import axios, { type InternalAxiosRequestConfig } from "axios";
 import { clearToken, getToken, isJwtExpired } from "../auth";
 
-const baseURL = String(import.meta.env.VITE_API_URL || "http://localhost:8080/api").replace(/\/+$/, "");
+type ApiValidationMessage = {
+  defaultMessage?: string;
+  message?: string;
+};
+
+type ApiErrorPayload = {
+  fieldErrors?: ApiValidationMessage[];
+  errors?: ApiValidationMessage[];
+  message?: string;
+  error?: string;
+  detail?: string;
+};
+
+const baseURL = String(
+  import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_API_BASE_URL ||
+    "http://localhost:8080/api",
+).replace(/\/+$/, "");
 
 const api = axios.create({
   baseURL,
@@ -9,9 +26,8 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-function isAuthEndpoint(config: any) {
-  const url = String(config?.url || "");
-  // como seu baseURL já é /api, aqui chega "/auth/login"
+function isAuthEndpoint(config: InternalAxiosRequestConfig) {
+  const url = String(config.url || "");
   return url.startsWith("/auth");
 }
 
@@ -25,10 +41,9 @@ api.interceptors.request.use(
   (config) => {
     const token = getToken();
 
-    // ✅ login/register nunca deve ser bloqueado pelo token antigo
     if (token && isJwtExpired(token) && isAuthEndpoint(config)) {
       clearToken();
-      return config; // segue sem Authorization
+      return config;
     }
 
     if (token) {
@@ -44,7 +59,7 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 api.interceptors.response.use(
@@ -53,15 +68,13 @@ api.interceptors.response.use(
     const status = err?.response?.status;
     const url = String(err?.config?.url || "");
 
-    // ✅ 401 no /auth/login deve aparecer como “credenciais inválidas”,
-    // não auto-logout
     if (status === 401 && !url.startsWith("/auth")) {
       clearToken();
       redirectToLogin();
     }
 
     return Promise.reject(err);
-  }
+  },
 );
 
 export function getApiErrorMessage(err: unknown): string {
@@ -69,7 +82,9 @@ export function getApiErrorMessage(err: unknown): string {
   if (!axios.isAxiosError(err)) return "Unexpected error";
 
   const status = err.response?.status;
-  const data = err.response?.data as any;
+  const data = err.response?.data as ApiErrorPayload | string | undefined;
+
+  if (typeof data === "string") return data;
 
   const fieldError =
     data?.fieldErrors?.[0]?.defaultMessage ||
@@ -79,11 +94,7 @@ export function getApiErrorMessage(err: unknown): string {
 
   if (fieldError) return fieldError;
 
-  const message =
-    data?.message ||
-    data?.error ||
-    data?.detail ||
-    (typeof data === "string" ? data : null);
+  const message = data?.message || data?.error || data?.detail;
 
   if (message) return message;
 

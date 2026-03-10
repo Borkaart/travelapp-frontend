@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { getApiErrorMessage } from "../../api/client";
 import { getBudgetByTrip, upsertBudget } from "../../api/budgetApi";
-import { useToast } from "../../shared/toast/ToastProvider";
-
+import { elevatedInputStyle, primaryButtonStyle } from "../../shared/ui/styles";
+import { useToast } from "../../shared/toast/toast";
+import { ui } from "../../shared/ui/tokens";
 
 type OutletCtx = { refreshKey: number; triggerRefresh: () => void };
 
@@ -29,7 +30,7 @@ export default function TripBudgetPage() {
     setError(null);
     try {
       const b = await getBudgetByTrip(tid);
-      setTotal(b?.total != null ? String(b.total) : "");
+      setTotal(b?.limitAmount != null ? String(b.limitAmount) : "");
       setCurrency(b?.currency ?? "BRL");
     } catch (e) {
       setError(getApiErrorMessage(e));
@@ -40,7 +41,7 @@ export default function TripBudgetPage() {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tid]);
 
   async function onSave() {
@@ -51,7 +52,7 @@ export default function TripBudgetPage() {
       const n = Number(total);
 
       if (!Number.isFinite(n) || n < 0) {
-        throw new Error("Budget deve ser um número >= 0.");
+        throw new Error("Budget deve ser um numero >= 0.");
       }
 
       const cur = currency?.trim() || "BRL";
@@ -61,16 +62,13 @@ export default function TripBudgetPage() {
         currency: cur.toUpperCase(),
       });
 
-
       triggerRefresh?.();
-
 
       push({
         kind: "success",
-        title: "Orçamento atualizado",
+        title: "Orcamento atualizado",
         message: "Summary sincronizado.",
       });
-
 
       await load();
     } catch (e: unknown) {
@@ -79,7 +77,7 @@ export default function TripBudgetPage() {
 
       push({
         kind: "error",
-        title: "Falha ao salvar orçamento",
+        title: "Falha ao salvar orcamento",
         message: msg,
       });
     } finally {
@@ -87,16 +85,26 @@ export default function TripBudgetPage() {
     }
   }
 
-  if (!Number.isFinite(tid)) return <p>Trip inválida.</p>;
+  if (!Number.isFinite(tid)) return <p>Trip invalida.</p>;
   if (loading) return <p>Carregando budget...</p>;
 
   return (
-    <div>
-      <h3>Budget</h3>
+    <div style={{ minHeight: "100%", display: "grid", alignContent: "start", gap: ui.space.lg }}>
+      <h3 style={{ margin: 0 }}>Budget</h3>
 
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+      {error ? <p style={{ color: "crimson", margin: 0 }}>{error}</p> : null}
 
-      <div style={{ display: "grid", gap: 10, maxWidth: 420 }}>
+      <div
+        style={{
+          display: "grid",
+          gap: 10,
+          maxWidth: 420,
+          padding: ui.space.xl,
+          borderRadius: ui.radius.xl,
+          border: "1px solid rgba(255,255,255,0.10)",
+          background: "rgba(255,255,255,0.04)",
+        }}
+      >
         <label>
           Total
           <input
@@ -105,6 +113,7 @@ export default function TripBudgetPage() {
             inputMode="decimal"
             placeholder="ex: 2500.00"
             disabled={saving}
+            style={elevatedInputStyle()}
           />
         </label>
 
@@ -115,15 +124,16 @@ export default function TripBudgetPage() {
             onChange={(e) => setCurrency(e.target.value)}
             placeholder="BRL"
             disabled={saving}
+            style={elevatedInputStyle()}
           />
         </label>
 
-        <button type="button" onClick={onSave} disabled={saving}>
+        <button type="button" onClick={onSave} disabled={saving} style={primaryButtonStyle()}>
           {saving ? "Salvando..." : "Salvar Budget"}
         </button>
 
-        <p style={{ opacity: 0.75, fontSize: 12 }}>
-          Após salvar, o Summary atualiza automaticamente.
+        <p style={{ opacity: 0.75, fontSize: 12, margin: 0 }}>
+          Apos salvar, o Summary atualiza automaticamente.
         </p>
       </div>
     </div>

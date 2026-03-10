@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getApiErrorMessage } from "../api/client";
 import { getTrips, type TripListItem } from "../api/tripApi";
+import { buildBackgroundStyle, getDefaultTripsImageUrl } from "../features/trips/backgrounds";
+import { primaryButtonStyle, secondaryButtonStyle } from "../shared/ui/styles";
+import { ui } from "../shared/ui/tokens";
 
 export default function TripsListPage() {
   const navigate = useNavigate();
@@ -23,21 +26,25 @@ export default function TripsListPage() {
   }
 
   useEffect(() => {
-    console.log("TripsListPage mounted");
     load();
   }, []);
 
   return (
     <div
       style={{
+        ...buildBackgroundStyle(getDefaultTripsImageUrl()),
         minHeight: "100vh",
-        background:
-          "radial-gradient(1200px 600px at 20% 0%, #2a2a2a 0%, #141414 60%, #0f0f0f 100%)",
-        color: "#fff",
       }}
     >
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 24px" }}>
-        {/* Header */}
+      <div
+        style={{
+          maxWidth: 1100,
+          margin: "0 auto",
+          padding: "36px 24px",
+          minHeight: "100vh",
+          boxSizing: "border-box",
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -47,31 +54,24 @@ export default function TripsListPage() {
             marginBottom: 22,
             position: "relative",
             zIndex: 5,
+            flexWrap: "wrap",
           }}
         >
           <div>
-            <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 6 }}>
-              Dashboard
-            </div>
-            <h1 style={{ margin: 0, fontSize: 32, letterSpacing: -0.3 }}>
-              Suas viagens
-            </h1>
+            <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 6 }}>Dashboard</div>
+            <h1 style={{ margin: 0, fontSize: 32, letterSpacing: -0.3 }}>Suas viagens</h1>
             <div style={{ opacity: 0.75, marginTop: 8 }}>
-              Gerencie itinerário, atividades, despesas e orçamento em um só lugar.
+              Gerencie itinerario, atividades, despesas e orcamento em um so lugar.
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <button
               type="button"
               onClick={load}
               disabled={loading}
               style={{
-                padding: "10px 12px",
-                borderRadius: 12,
-                border: "1px solid rgba(255,255,255,0.12)",
-                background: "rgba(255,255,255,0.06)",
-                color: "rgba(255,255,255,0.9)",
+                ...secondaryButtonStyle(),
                 cursor: loading ? "not-allowed" : "pointer",
               }}
             >
@@ -82,13 +82,9 @@ export default function TripsListPage() {
               type="button"
               onClick={() => navigate("/trips/new")}
               style={{
+                ...primaryButtonStyle(),
                 padding: "10px 14px",
-                borderRadius: 12,
-                border: "1px solid rgba(74,222,128,0.35)",
-                background: "rgba(74,222,128,0.18)",
-                color: "#CFFFE0",
                 fontWeight: 700,
-                cursor: "pointer",
               }}
             >
               + Nova viagem
@@ -96,18 +92,19 @@ export default function TripsListPage() {
           </div>
         </div>
 
-        {/* Content card */}
         <div
           style={{
             padding: 18,
-            borderRadius: 18,
+            borderRadius: ui.radius.xl,
             background: "rgba(255,255,255,0.03)",
             border: "1px solid rgba(255,255,255,0.07)",
             position: "relative",
             zIndex: 1,
+            minHeight: "calc(100vh - 190px)",
+            boxSizing: "border-box",
           }}
         >
-          {error && (
+          {error ? (
             <div
               style={{
                 padding: 12,
@@ -120,13 +117,11 @@ export default function TripsListPage() {
             >
               {error}
             </div>
-          )}
+          ) : null}
 
-          {!error && loading && (
-            <div style={{ opacity: 0.75 }}>Carregando suas viagens…</div>
-          )}
+          {!error && loading ? <div style={{ opacity: 0.75 }}>Carregando suas viagens...</div> : null}
 
-          {!loading && !error && trips.length === 0 && (
+          {!loading && !error && trips.length === 0 ? (
             <div
               style={{
                 padding: 18,
@@ -136,11 +131,11 @@ export default function TripsListPage() {
                 color: "rgba(255,255,255,0.80)",
               }}
             >
-              Nenhuma viagem cadastrada ainda. Clique em <b>+ Nova viagem</b> para começar.
+              Nenhuma viagem cadastrada ainda. Clique em <b>+ Nova viagem</b> para comecar.
             </div>
-          )}
+          ) : null}
 
-          {!loading && !error && trips.length > 0 && (
+          {!loading && !error && trips.length > 0 ? (
             <div
               style={{
                 display: "grid",
@@ -181,23 +176,19 @@ export default function TripsListPage() {
                     e.currentTarget.style.borderColor = "rgba(255,255,255,0.10)";
                   }}
                 >
-                  <div style={{ fontSize: 18, fontWeight: 750, letterSpacing: -0.2 }}>
-                    {t.title}
-                  </div>
+                  <div style={{ fontSize: 18, fontWeight: 750, letterSpacing: -0.2 }}>{t.title}</div>
 
                   <div style={{ opacity: 0.78, marginTop: 6 }}>{t.destinationName}</div>
 
                   <div style={{ opacity: 0.68, marginTop: 10, fontSize: 13 }}>
-                    {t.startDate} → {t.endDate}
+                    {t.startDate} {"->"} {t.endDate}
                   </div>
 
-                  <div style={{ marginTop: 12, opacity: 0.55, fontSize: 12 }}>
-                    Abrir resumo →
-                  </div>
+                  <div style={{ marginTop: 12, opacity: 0.55, fontSize: 12 }}>Abrir resumo {"->"}</div>
                 </div>
               ))}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

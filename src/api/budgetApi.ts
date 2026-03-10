@@ -18,11 +18,8 @@ export type UpsertBudgetRequest = {
  * GET /api/budgets/trip/{tripId}
  */
 export async function getBudgetByTrip(tripId: number): Promise<Budget | null> {
-  const res = await api.get<any>(`/budgets/trip/${tripId}`);
-  return {
-    ...res.data,
-    limitAmount: res.data.limitAmount,
-  };
+  const res = await api.get<Budget>(`/budgets/trip/${tripId}`);
+  return res.data;
 }
 
 /**

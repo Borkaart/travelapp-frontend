@@ -1,10 +1,12 @@
 import api from "./client";
+import type { TripSummary } from "../models/TripSummary";
 
 export type TripListItem = {
   id: number;
   title: string;
   destinationId: number;
   destinationName: string;
+  destinationImageUrl?: string | null;
   status: string;
   startDate: string;
   endDate: string;
@@ -40,9 +42,6 @@ export async function createTrip(payload: CreateTripRequest) {
   const res = await api.post("/trips", payload);
   return res.data;
 }
-import type { TripSummary } from "../models/TripSummary";
-
-// ...
 
 export async function getTripSummary(tripId: number): Promise<TripSummary> {
   const res = await api.get<TripSummary>(`/trips/${tripId}/summary`);

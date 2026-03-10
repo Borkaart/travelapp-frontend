@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { getTripSummary } from "../../../api/tripApi";
-import type { TripSummary } from "../../../models/TripSummary";
 import { getApiErrorMessage } from "../../../api/client";
+import { getTripSummary } from "../../../api/tripApi";
 import { calculateBudgetHealth } from "../../../domain/budget";
-
+import type { TripSummary } from "../../../models/TripSummary";
 
 type State = {
   data: TripSummary | null;
@@ -20,13 +19,11 @@ export function useTripSummary(tripId: number, refreshKey: number): State {
   useEffect(() => {
     let alive = true;
 
-    setLoading(true);
-    setError(null);
-
     getTripSummary(tripId)
       .then((res) => {
         if (!alive) return;
         setData(res);
+        setError(null);
       })
       .catch((err) => {
         if (!alive) return;
@@ -44,10 +41,7 @@ export function useTripSummary(tripId: number, refreshKey: number): State {
 
   const health = useMemo(() => {
     if (!data) return null;
-    return calculateBudgetHealth(
-      Number(data.budgetTotal ?? 0),
-      Number(data.expensesTotal ?? 0)
-    );
+    return calculateBudgetHealth(Number(data.budgetTotal ?? 0), Number(data.expensesTotal ?? 0));
   }, [data]);
 
   return { data, loading, error, health };
