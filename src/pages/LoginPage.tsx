@@ -11,6 +11,7 @@ import {
 } from "../shared/ui/styles";
 import { ui } from "../shared/ui/tokens";
 import { images } from "../shared/ui/assets";
+import { ThemeToggle } from "../shared/ui/ThemeToggle";
 
 type LoginResponse = {
   accessToken?: string;
@@ -96,8 +97,13 @@ export default function LoginPage() {
         alignItems: "center",
         justifyContent: "center",
         padding: ui.space.lg,
+        position: "relative",
       }}
     >
+      <div style={{ position: "absolute", top: ui.space.lg, right: ui.space.lg }}>
+        <ThemeToggle />
+      </div>
+
       <div
         className="fade-in"
         style={{
