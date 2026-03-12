@@ -180,7 +180,7 @@ const autocompleteBox: CSSProperties = {
   padding: ui.space.sm,
   borderRadius: ui.radius.lg,
   border: `1px solid ${ui.colors.neutral[200]}`,
-  background: ui.colors.white,
+  background: "var(--bg-surface)",
   boxShadow: ui.shadows.xl,
 };
 
@@ -203,11 +203,11 @@ const autocompleteItem = (active: boolean, highlighted: boolean, isNarrow: boole
   borderRadius: ui.radius.md,
   border: "none",
   background: active
-    ? ui.colors.primary[50]
+    ? "var(--bg-active)"
     : highlighted
-    ? ui.colors.neutral[100]
+    ? "var(--bg-hover)"
     : "transparent",
-  color: active ? ui.colors.primary[900] : ui.colors.neutral[900],
+  color: active ? "var(--text-active)" : "var(--text-primary)",
   cursor: "pointer",
   minHeight: isNarrow ? ui.controlHeight.xl : ui.controlHeight.md,
   transition: ui.transitions.fast,

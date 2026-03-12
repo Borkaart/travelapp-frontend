@@ -34,6 +34,11 @@
   --primary-500: #0ea5e9;
   --secondary-500: #22c55e;
 
+  /* Autocomplete & Interactive States */
+  --bg-hover: var(--neutral-100);
+  --bg-active: #f0f9ff; /* primary-50 */
+  --text-active: #0c4a6e; /* primary-900 */
+
   color: var(--text-primary);
   background-color: var(--bg-body);
 
@@ -67,6 +72,11 @@
   /* Glass Effect */
   --bg-glass-rgb: 0, 0, 0;
   --border-glass-rgb: 255, 255, 255; /* Keep border light but transparent for contrast */
+
+  /* Autocomplete & Interactive States (Dark) */
+  --bg-hover: #27272a; /* neutral-200 */
+  --bg-active: #0c4a6e; /* primary-900 */
+  --text-active: #f0f9ff; /* primary-50 */
 }
 
 /* Reset & Base */
