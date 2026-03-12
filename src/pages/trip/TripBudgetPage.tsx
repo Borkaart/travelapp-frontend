@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { getApiErrorMessage } from "../../api/client";
 import { getBudgetByTrip, upsertBudget } from "../../api/budgetApi";
-import { elevatedInputStyle, primaryButtonStyle } from "../../shared/ui/styles";
+import { inputSurfaceStyle, primaryButtonStyle } from "../../shared/ui/styles";
 import { useToast } from "../../shared/toast/toast";
 import { ui } from "../../shared/ui/tokens";
 
@@ -113,7 +113,7 @@ export default function TripBudgetPage() {
             inputMode="decimal"
             placeholder="ex: 2500.00"
             disabled={saving}
-            style={elevatedInputStyle()}
+            style={inputSurfaceStyle()}
           />
         </label>
 
@@ -124,7 +124,7 @@ export default function TripBudgetPage() {
             onChange={(e) => setCurrency(e.target.value)}
             placeholder="BRL"
             disabled={saving}
-            style={elevatedInputStyle()}
+            style={inputSurfaceStyle()}
           />
         </label>
 

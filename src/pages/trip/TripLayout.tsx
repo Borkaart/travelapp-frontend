@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { NavLink, Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, Outlet, useParams } from "react-router-dom";
 import { Calendar, DollarSign, List, PieChart } from "lucide-react";
 import { getTripById, type TripListItem } from "../../api/tripApi";
 import { ui } from "../../shared/ui/tokens";
@@ -14,7 +14,6 @@ export type TripOutletContext = {
 
 export default function TripLayout() {
   const { tripId } = useParams();
-  const location = useLocation();
   const numericTripId = Number(tripId);
 
   const [refreshKey, setRefreshKey] = useState(0);
@@ -43,17 +42,6 @@ export default function TripLayout() {
       alive = false;
     };
   }, [numericTripId]);
-
-  const currentTab = useMemo(() => {
-    const p = location.pathname;
-    if (p.endsWith(`/trips/${tripId}`) || p.endsWith(`/trips/${tripId}/`)) return "summary";
-    if (p.includes("/summary")) return "summary";
-    if (p.includes("/budget")) return "budget";
-    if (p.includes("/itinerary")) return "itinerary";
-    if (p.includes("/activities")) return "itinerary";
-    if (p.includes("/expenses")) return "expenses";
-    return "";
-  }, [location.pathname, tripId]);
 
   const navLinkStyle = ({ isActive }: { isActive: boolean }) => ({
     display: "flex",

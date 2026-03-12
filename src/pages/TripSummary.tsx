@@ -17,8 +17,8 @@ import BudgetProgressBar from "../features/trip-summary/components/BudgetProgres
 import { useTripSummary } from "../features/trip-summary/hooks/useTripSummary";
 import { useMediaQuery } from "../shared/hooks/useMediaQuery";
 import {
-  elevatedInputStyle,
   ghostButtonStyle,
+  inputSurfaceStyle,
   primaryButtonStyle,
   secondaryButtonStyle,
 } from "../shared/ui/styles";
@@ -1164,7 +1164,7 @@ function btn(): React.CSSProperties {
 }
 
 const selectInput: React.CSSProperties = {
-  ...elevatedInputStyle(),
+  ...inputSurfaceStyle(),
 };
 
 const emptyBox: React.CSSProperties = {

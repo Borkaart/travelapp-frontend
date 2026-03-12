@@ -12,8 +12,8 @@ import {
   type UpdateExpenseRequest,
 } from "../../api/expenseApi";
 import {
-  elevatedInputStyle,
   ghostButtonStyle,
+  inputSurfaceStyle,
   primaryButtonStyle,
 } from "../../shared/ui/styles";
 import { ui } from "../../shared/ui/tokens";
@@ -262,7 +262,7 @@ export default function TripExpensesPage() {
                 value={category}
                 onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
                 disabled={saving}
-                style={elevatedInputStyle()}
+                style={inputSurfaceStyle()}
               >
                 <option value="FOOD">Food</option>
                 <option value="TRANSPORT">Transport</option>
@@ -275,7 +275,7 @@ export default function TripExpensesPage() {
 
             <label>
               Descricao
-              <input value={title} onChange={(e) => setTitle(e.target.value)} disabled={saving} style={elevatedInputStyle()} />
+              <input value={title} onChange={(e) => setTitle(e.target.value)} disabled={saving} style={inputSurfaceStyle()} />
             </label>
 
             <label>
@@ -286,7 +286,7 @@ export default function TripExpensesPage() {
                 inputMode="decimal"
                 placeholder="ex: 100.50"
                 disabled={saving}
-                style={elevatedInputStyle()}
+                style={inputSurfaceStyle()}
               />
             </label>
 
@@ -297,7 +297,7 @@ export default function TripExpensesPage() {
                 value={spentAt}
                 onChange={(e) => setSpentAt(e.target.value)}
                 disabled={saving}
-                style={elevatedInputStyle()}
+                style={inputSurfaceStyle()}
               />
             </label>
 
