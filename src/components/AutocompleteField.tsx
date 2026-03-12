@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
+import { useMemo, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { useMediaQuery } from "../shared/hooks/useMediaQuery";
 import { ui } from "../shared/ui/tokens";
 
@@ -44,14 +44,13 @@ export default function AutocompleteField<T>({
   const hasMinQuery = query.trim().length >= minQueryLength;
   const showDropdown = dropdownOpen && (loading || hasMinQuery || minQueryLength === 0);
 
-  useEffect(() => {
-    setHighlightedIndex(0);
-  }, [query, items]);
-
   const selectedKey = useMemo(
     () => (selectedItem ? getItemKey(selectedItem) : null),
     [getItemKey, selectedItem],
   );
+
+  const safeHighlightedIndex =
+    items.length === 0 ? 0 : Math.max(0, Math.min(highlightedIndex, items.length - 1));
 
   function selectItem(item: T) {
     onSelect(item);
@@ -78,7 +77,7 @@ export default function AutocompleteField<T>({
 
     if (event.key === "Enter") {
       event.preventDefault();
-      const item = items[highlightedIndex];
+      const item = items[safeHighlightedIndex];
       if (item) selectItem(item);
       return;
     }
@@ -98,8 +97,12 @@ export default function AutocompleteField<T>({
           onChange={(event) => {
             onChangeQuery(event.target.value);
             setDropdownOpen(true);
+            setHighlightedIndex(0);
           }}
-          onFocus={() => setDropdownOpen(true)}
+          onFocus={() => {
+            setDropdownOpen(true);
+            setHighlightedIndex(0);
+          }}
           onBlur={() => {
             window.setTimeout(() => setDropdownOpen(false), 120);
           }}
@@ -122,7 +125,7 @@ export default function AutocompleteField<T>({
                 {items.map((item, index) => {
                   const key = getItemKey(item);
                   const active = selectedKey === key;
-                  const highlighted = highlightedIndex === index;
+                  const highlighted = safeHighlightedIndex === index;
 
                   return (
                     <button
