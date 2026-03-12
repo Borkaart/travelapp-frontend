@@ -7,7 +7,7 @@ export function inputSurfaceStyle(): CSSProperties {
     padding: "12px 16px",
     borderRadius: ui.radius.lg,
     border: `1px solid ${ui.colors.neutral[200]}`,
-    background: ui.colors.white,
+    background: "var(--bg-surface)",
     color: ui.colors.neutral[900],
     fontSize: ui.typography.fontSize.base,
     fontFamily: ui.typography.fontFamily.body,
@@ -47,7 +47,7 @@ export function secondaryButtonStyle(): CSSProperties {
     padding: "12px 24px",
     borderRadius: ui.radius.full,
     border: `1px solid ${ui.colors.neutral[200]}`,
-    background: ui.colors.white,
+    background: "var(--bg-surface)",
     color: ui.colors.neutral[700],
     cursor: "pointer",
     fontWeight: ui.typography.fontWeight.medium,
@@ -77,7 +77,7 @@ export function ghostButtonStyle(): CSSProperties {
 
 export function cardStyle(): CSSProperties {
   return {
-    background: ui.colors.white,
+    background: "var(--bg-surface)",
     borderRadius: ui.radius.xl,
     padding: ui.space.lg,
     boxShadow: ui.shadows.lg,
@@ -88,11 +88,11 @@ export function cardStyle(): CSSProperties {
 
 export function glassCardStyle(): CSSProperties {
   return {
-    background: "rgba(255, 255, 255, 0.7)",
+    background: "rgba(var(--bg-glass-rgb), 0.7)",
     backdropFilter: "blur(12px)",
     borderRadius: ui.radius.xl,
     padding: ui.space.xl,
-    border: "1px solid rgba(255, 255, 255, 0.3)",
-    boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.15)",
+    border: "1px solid rgba(var(--border-glass-rgb), 0.3)",
+    boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.15)",
   };
 }

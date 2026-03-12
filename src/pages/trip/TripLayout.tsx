@@ -108,7 +108,7 @@ export default function TripLayout() {
       {/* Navigation Tabs */}
       <div
         style={{
-          background: ui.colors.white,
+          background: "var(--bg-surface)",
           borderBottom: `1px solid ${ui.colors.neutral[200]}`,
           position: "sticky",
           top: 73, // Height of Header (approx)

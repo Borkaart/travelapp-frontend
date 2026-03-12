@@ -4,6 +4,7 @@ import { clearToken } from "../auth";
 import { ui } from "../shared/ui/tokens";
 import { images } from "../shared/ui/assets";
 import { ghostButtonStyle, primaryButtonStyle } from "../shared/ui/styles";
+import { ThemeToggle } from "../shared/ui/ThemeToggle";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function Header() {
         alignItems: "center",
         justifyContent: "space-between",
         padding: `${ui.space.md}px ${ui.space.xl}px`,
-        background: "rgba(255, 255, 255, 0.8)",
+        background: "rgba(var(--bg-glass-rgb), 0.8)",
         backdropFilter: "blur(12px)",
         borderBottom: `1px solid ${ui.colors.neutral[200]}`,
         position: "sticky",
@@ -74,6 +75,8 @@ export default function Header() {
           <Plus size={16} style={{ marginRight: 6 }} />
           Nova Viagem
         </button>
+
+        <ThemeToggle />
 
         <div
           style={{
