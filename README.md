@@ -1,173 +1,122 @@
-# TravelApp Web
+# TravelApp Frontend
 
-Frontend application for the TravelApp ecosystem.
+[![React](https://img.shields.io/badge/React-18-blue?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite)](https://vitejs.dev/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-This project consumes the TravelApp REST API and provides an interactive interface for planning trips, managing expenses and tracking budget health in real time.
+> [Ler em Português (Read in Portuguese)](README.pt-BR.md)
 
-The focus of this frontend is not only UI — but **state synchronization with domain rules coming from the backend**.
+## 🌍 Overview
 
----
+**TravelApp Frontend** is the client-side application for the TravelApp ecosystem, designed to provide a seamless experience for planning trips, managing itineraries, and tracking travel expenses.
 
-## Tech Stack
+This project goes beyond a simple UI; it focuses on **state synchronization with domain rules from the backend**, ensuring that budget health indicators and trip summaries always reflect the real-time state of the server. It acts as a true SaaS client, reacting to data mutations instantly.
 
-* React 18
-* TypeScript
-* Vite
-* React Router
-* Context API
-* Modular feature-based architecture
+## ✨ Key Features
 
----
+| Feature | Description |
+| :--- | :--- |
+| **🔐 Authentication** | Secure JWT-based login with token persistence and automatic redirection. |
+| **✈️ Trip Management** | Create, view, and manage trips with destination autocomplete (Countries & Cities). |
+| **📅 Itinerary Planning** | Organize activities by day and keep track of your schedule. |
+| **💰 Budget Tracking** | Real-time budget health visualization (Healthy, Warning, Danger, Exceeded). |
+| **💸 Expense Manager** | Log expenses with categories and instantly see the impact on your budget. |
+| **theme Theme Support** | Fully integrated **Dark Mode** and Light Mode with automatic system detection. |
 
-## Core Concepts
+## 🛠️ Tech Stack
 
-This frontend was designed to behave like a real SaaS client:
+-   **Core**: React 18, TypeScript
+-   **Build Tool**: Vite
+-   **Routing**: React Router DOM v7
+-   **HTTP Client**: Axios
+-   **Icons**: Lucide React
+-   **Styling**: Custom CSS Variables & Design Tokens (No external UI framework dependency)
+-   **Architecture**: Modular Feature-based Architecture
 
-Instead of duplicating business logic in the UI, the frontend:
+## 📸 Screenshots
 
-* fetches aggregated summary from API
-* reacts to domain state changes
-* updates views automatically after mutations
+<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+  <img src="https://via.placeholder.com/400x250?text=Login+Screen" alt="Login Screen" width="400" />
+  <img src="https://via.placeholder.com/400x250?text=Trips+Dashboard" alt="Trips Dashboard" width="400" />
+  <img src="https://via.placeholder.com/400x250?text=Trip+Summary" alt="Trip Summary" width="400" />
+  <img src="https://via.placeholder.com/400x250?text=Dark+Mode" alt="Dark Mode Support" width="400" />
+</div>
 
-Example:
+> *Note: Replace placeholders with actual application screenshots.*
 
-When an expense is created →
-Budget health updates →
-Trip summary updates →
-Progress bar updates
+## 🚀 Getting Started
 
-No manual refresh required.
+### Prerequisites
 
----
+-   **Node.js** (v18 or higher)
+-   **npm** or **yarn**
+-   **TravelApp Backend** running locally (usually on port 8080)
 
-## Features
+### Installation
 
-### Authentication
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/your-username/travelapp-frontend.git
+    cd travelapp-frontend
+    ```
 
-* JWT login
-* Token persistence in localStorage
-* Automatic authenticated requests
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-### Trips
+3.  **Configure Environment**
+    Create a `.env` file in the root directory:
+    ```env
+    VITE_API_URL=http://localhost:8080
+    ```
 
-* View trips
-* Navigate between modules
+4.  **Run the application**
+    ```bash
+    npm run dev
+    ```
 
-### Summary
+    The app will be available at `http://localhost:5173`.
 
-* Aggregated trip information
-* Budget health visualization
-* Real-time synchronization
+## 📂 Project Structure
 
-### Budget
-
-* Configure trip budget
-* Immediate UI feedback
-
-### Expenses
-
-* CRUD expenses
-* Category selection
-* Auto refresh summary
-
----
-
-## Budget Health Visualization
-
-The UI reflects backend domain state:
-
-| Status   | Meaning |
-| -------- | ------- |
-| Healthy  | < 70%   |
-| Warning  | < 90%   |
-| Danger   | < 100%  |
-| Exceeded | > 100%  |
-
-The progress bar is a visual representation of a backend domain calculation — not a frontend estimate.
-
----
-
-## Project Structure
-
-Feature oriented organization:
+The project follows a **Feature-based Architecture** to ensure scalability and maintainability:
 
 ```
 src/
-  app/            → providers and router
-  domain/         → shared domain contracts (budget health)
-  features/       → application modules
-      auth/
-      trips/
-      trip-summary/
-  pages/          → route screens
-  shared/         → reusable UI and utilities
+├── api/            # API client and service definitions
+├── app/            # App-wide providers and configuration
+├── components/     # Shared generic components (Header, Inputs)
+├── domain/         # Domain logic and type definitions
+├── features/       # Feature-specific components and hooks
+│   ├── auth/
+│   ├── trips/
+│   └── trip-summary/
+├── pages/          # Route pages (Entry points)
+├── shared/         # Shared utilities, UI tokens, and styles
+│   ├── contexts/   # React Contexts (Theme, Auth)
+│   └── ui/         # Design System tokens and primitives
+└── main.tsx        # Application entry point
 ```
 
-This avoids the traditional "components folder chaos".
+## 🤝 Contributing
 
----
+Contributions are welcome! Please follow these steps:
 
-## Running the project
+1.  Fork the project.
+2.  Create a feature branch (`git checkout -b feature/AmazingFeature`).
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the branch (`git push origin feature/AmazingFeature`).
+5.  Open a Pull Request.
 
-### 1 — Install dependencies
+## 📄 License
 
-```
-npm install
-```
+This project is licensed under the **MIT License**.
 
-### 2 — Configure API URL
+## 📞 Contact
 
-Create `.env`:
+**Paulo Henrique dos Anjos**
 
-```
-VITE_API_URL=http://localhost:8080
-```
-
-### 3 — Run
-
-```
-npm run dev
-```
-
-App runs at:
-
-```
-http://localhost:5173
-```
-
----
-
-## Backend Dependency
-
-This app requires the TravelApp API running locally:
-
-```
-http://localhost:8080
-```
-
----
-
-## Design Decisions
-
-* Domain state lives in backend
-* Frontend reflects backend truth
-* No duplicated calculations
-* UI reacts to mutations via refreshKey pattern
-
-This simulates real world enterprise frontends where consistency matters more than local state hacks.
-
----
-
-## Future Improvements
-
-* React Query for caching
-* Optimistic updates
-* Offline support
-* Dark/light theme
-* Mobile responsive layout
-
----
-
-## Author
-
-Paulo Henrique dos Anjos
+-   GitHub: [@Borkaart](https://github.com/Borkaart)
+-   Email: your-email@example.com
