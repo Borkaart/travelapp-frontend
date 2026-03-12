@@ -22,21 +22,21 @@ export default function SelectedItemCard({
 
   return (
     <div style={{ ...card, padding: isNarrow ? ui.space.md : ui.space.lg }}>
-      <div style={{ fontSize: ui.typography.fontSize.xs, color: ui.colors.neutral[500], marginBottom: 4 }}>
+      <div style={{ fontSize: ui.typography.fontSize.xs, color: "var(--text-selected-label)", marginBottom: 4 }}>
         {label}
       </div>
       <div
         style={{
           fontSize: isNarrow ? ui.typography.fontSize.base : ui.typography.fontSize.lg,
           fontWeight: ui.typography.fontWeight.bold,
-          color: ui.colors.neutral[900],
+          color: "var(--text-selected-title)",
           wordBreak: "break-word",
         }}
       >
         {title}
       </div>
       {description ? (
-        <div style={{ marginTop: 4, color: ui.colors.neutral[600], fontSize: ui.typography.fontSize.sm }}>
+        <div style={{ marginTop: 4, color: "var(--text-selected-desc)", fontSize: ui.typography.fontSize.sm }}>
           {description}
         </div>
       ) : null}
@@ -61,7 +61,7 @@ export default function SelectedItemCard({
 
 const card: CSSProperties = {
   borderRadius: ui.radius.lg,
-  border: `1px solid ${ui.colors.primary[200]}`,
-  background: ui.colors.primary[50],
+  border: "1px solid var(--border-selected-card)",
+  background: "var(--bg-selected-card)",
   boxShadow: ui.shadows.sm,
 };

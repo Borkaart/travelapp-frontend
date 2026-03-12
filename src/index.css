@@ -39,6 +39,13 @@
   --bg-active: #f0f9ff; /* primary-50 */
   --text-active: #0c4a6e; /* primary-900 */
 
+  /* Selected Item Card */
+  --bg-selected-card: #f0f9ff; /* primary-50 */
+  --border-selected-card: #bae6fd; /* primary-200 */
+  --text-selected-label: var(--neutral-500);
+  --text-selected-title: var(--neutral-900);
+  --text-selected-desc: var(--neutral-600);
+
   color: var(--text-primary);
   background-color: var(--bg-body);
 
@@ -77,6 +84,13 @@
   --bg-hover: #27272a; /* neutral-200 */
   --bg-active: #0c4a6e; /* primary-900 */
   --text-active: #f0f9ff; /* primary-50 */
+
+  /* Selected Item Card (Dark) */
+  --bg-selected-card: #1e3a8a; /* blue-900 (custom) for better contrast */
+  --border-selected-card: #3b82f6; /* blue-500 */
+  --text-selected-label: #cbd5e1; /* slate-300 */
+  --text-selected-title: #ffffff; /* white */
+  --text-selected-desc: #e2e8f0; /* slate-200 */
 }
 
 /* Reset & Base */
