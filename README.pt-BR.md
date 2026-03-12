@@ -119,4 +119,4 @@ Este projeto está licenciado sob a **Licença MIT**.
 **Paulo Henrique dos Anjos**
 
 -   GitHub: [@Borkaart](https://github.com/Borkaart)
--   Email: seu-email@exemplo.com
+-   Email: pborkart@outlook.com
