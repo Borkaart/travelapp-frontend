@@ -4,63 +4,95 @@ import { ui } from "./tokens";
 export function inputSurfaceStyle(): CSSProperties {
   return {
     width: "100%",
-    padding: "12px 12px",
-    borderRadius: ui.radius.md,
-    border: "1px solid rgba(255,255,255,0.12)",
-    background: "rgba(0,0,0,0.35)",
-    color: "#fff",
+    padding: "12px 16px",
+    borderRadius: ui.radius.lg,
+    border: `1px solid ${ui.colors.neutral[200]}`,
+    background: ui.colors.white,
+    color: ui.colors.neutral[900],
+    fontSize: ui.typography.fontSize.base,
+    fontFamily: ui.typography.fontFamily.body,
     outline: "none",
-    minHeight: ui.controlHeight.md,
-  };
-}
-
-export function elevatedInputStyle(): CSSProperties {
-  return {
-    width: "100%",
-    marginTop: 6,
-    padding: "10px 12px",
-    borderRadius: ui.radius.md,
-    border: "1px solid rgba(255,255,255,0.12)",
-    background: "rgba(255,255,255,0.06)",
-    color: "#fff",
-    minHeight: ui.controlHeight.md,
+    minHeight: ui.controlHeight.lg,
+    transition: ui.transitions.fast,
+    boxShadow: ui.shadows.sm,
   };
 }
 
 export function primaryButtonStyle(): CSSProperties {
   return {
-    padding: "10px 12px",
-    borderRadius: ui.radius.md,
-    border: "1px solid rgba(74,222,128,0.35)",
-    background: "rgba(74,222,128,0.18)",
-    color: "#CFFFE0",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "12px 24px",
+    borderRadius: ui.radius.full, // Pill shape for travel app feel
+    border: "none",
+    background: `linear-gradient(135deg, ${ui.colors.primary[500]}, ${ui.colors.primary[600]})`,
+    color: ui.colors.white,
     cursor: "pointer",
-    fontWeight: 700,
-    minHeight: ui.controlHeight.md,
+    fontWeight: ui.typography.fontWeight.semibold,
+    fontSize: ui.typography.fontSize.base,
+    fontFamily: ui.typography.fontFamily.body,
+    minHeight: ui.controlHeight.lg,
+    transition: ui.transitions.normal,
+    boxShadow: ui.shadows.md,
+    letterSpacing: "0.025em",
   };
 }
 
 export function secondaryButtonStyle(): CSSProperties {
   return {
-    padding: "10px 12px",
-    borderRadius: ui.radius.md,
-    border: "1px solid rgba(255,255,255,0.12)",
-    background: "rgba(255,255,255,0.06)",
-    color: "rgba(255,255,255,0.9)",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "12px 24px",
+    borderRadius: ui.radius.full,
+    border: `1px solid ${ui.colors.neutral[200]}`,
+    background: ui.colors.white,
+    color: ui.colors.neutral[700],
     cursor: "pointer",
-    minHeight: ui.controlHeight.md,
+    fontWeight: ui.typography.fontWeight.medium,
+    fontSize: ui.typography.fontSize.base,
+    fontFamily: ui.typography.fontFamily.body,
+    minHeight: ui.controlHeight.lg,
+    transition: ui.transitions.normal,
   };
 }
 
 export function ghostButtonStyle(): CSSProperties {
   return {
-    padding: "10px 12px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "8px 16px",
     borderRadius: ui.radius.md,
-    border: "1px solid rgba(255,255,255,0.12)",
+    border: "none",
     background: "transparent",
-    color: "#e8eefc",
+    color: ui.colors.primary[600],
     cursor: "pointer",
-    fontWeight: 700,
-    minHeight: ui.controlHeight.md,
+    fontWeight: ui.typography.fontWeight.medium,
+    fontFamily: ui.typography.fontFamily.body,
+    transition: ui.transitions.fast,
+  };
+}
+
+export function cardStyle(): CSSProperties {
+  return {
+    background: ui.colors.white,
+    borderRadius: ui.radius.xl,
+    padding: ui.space.lg,
+    boxShadow: ui.shadows.lg,
+    border: `1px solid ${ui.colors.neutral[100]}`,
+    transition: ui.transitions.normal,
+  };
+}
+
+export function glassCardStyle(): CSSProperties {
+  return {
+    background: "rgba(255, 255, 255, 0.7)",
+    backdropFilter: "blur(12px)",
+    borderRadius: ui.radius.xl,
+    padding: ui.space.xl,
+    border: "1px solid rgba(255, 255, 255, 0.3)",
+    boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.15)",
   };
 }

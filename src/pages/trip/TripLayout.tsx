@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
-import { clearToken } from "../../auth";
+import { Calendar, DollarSign, List, PieChart } from "lucide-react";
 import { getTripById, type TripListItem } from "../../api/tripApi";
-import { buildBackgroundStyle } from "../../features/trips/backgrounds";
-import { useMediaQuery } from "../../shared/hooks/useMediaQuery";
 import { ui } from "../../shared/ui/tokens";
+import { images } from "../../shared/ui/assets";
+import Header from "../../components/Header";
 
 export type TripOutletContext = {
   refreshKey: number;
@@ -14,10 +14,8 @@ export type TripOutletContext = {
 
 export default function TripLayout() {
   const { tripId } = useParams();
-  const navigate = useNavigate();
   const location = useLocation();
   const numericTripId = Number(tripId);
-  const isNarrow = useMediaQuery("(max-width: 720px)");
 
   const [refreshKey, setRefreshKey] = useState(0);
   const [trip, setTrip] = useState<TripListItem | null>(null);
@@ -57,150 +55,103 @@ export default function TripLayout() {
     return "";
   }, [location.pathname, tripId]);
 
-  const tabStyle = (isActive: boolean) => ({
-    display: "inline-flex",
+  const navLinkStyle = ({ isActive }: { isActive: boolean }) => ({
+    display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    padding: isNarrow ? "12px 14px" : "10px 12px",
-    borderRadius: ui.radius.sm,
-    fontSize: 14,
-    fontWeight: 600,
+    gap: 8,
+    padding: "10px 16px",
+    borderRadius: ui.radius.full,
+    fontSize: ui.typography.fontSize.sm,
+    fontWeight: ui.typography.fontWeight.medium,
     textDecoration: "none",
-    border: `1px solid ${isActive ? "#2f2f2f" : "transparent"}`,
-    background: isActive ? "#0f0f0f" : "transparent",
-    color: isActive ? "#ffffff" : "rgba(255,255,255,0.80)",
-    transition: "all 120ms ease",
-    cursor: "pointer",
-    minHeight: ui.controlHeight.md,
-    flex: isNarrow ? "1 1 140px" : undefined,
+    color: isActive ? ui.colors.primary[600] : ui.colors.neutral[600],
+    background: isActive ? ui.colors.primary[50] : "transparent",
+    border: `1px solid ${isActive ? ui.colors.primary[100] : "transparent"}`,
+    transition: ui.transitions.fast,
   });
 
   return (
-    <div
-      style={{
-        ...buildBackgroundStyle(trip?.destinationImageUrl),
-        minHeight: "100vh",
-      }}
-    >
+    <div style={{ minHeight: "100vh", background: ui.colors.neutral[50] }}>
+      <Header />
+
+      {/* Trip Hero */}
       <div
+        className="fade-in"
         style={{
-          maxWidth: 1100,
-          margin: "0 auto",
-          padding: isNarrow ? `${ui.space.xl}px ${ui.space.lg}px 28px` : `28px ${ui.space.xxl}px`,
-          minHeight: "100vh",
-          boxSizing: "border-box",
+          height: 240,
+          background: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${
+            trip?.destinationImageUrl || images.defaultDestination
+          }) no-repeat center center / cover`,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          padding: `${ui.space.xl}px ${ui.space.xxl}px`,
+          color: "white",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: isNarrow ? "flex-start" : "center",
-            justifyContent: "space-between",
-            gap: 16,
-            marginBottom: 14,
-            flexWrap: "wrap",
-          }}
-        >
-          <div
+        <div className="container" style={{ width: "100%", padding: 0 }}>
+          <div style={{ fontSize: ui.typography.fontSize.sm, opacity: 0.9, marginBottom: 4 }}>
+            Viagem para
+          </div>
+          <h1
             style={{
-              display: "flex",
-              alignItems: isNarrow ? "flex-start" : "center",
-              gap: 12,
-              flexWrap: "wrap",
+              margin: 0,
+              fontSize: ui.typography.fontSize["4xl"],
+              fontWeight: ui.typography.fontWeight.bold,
+              color: "white",
+              textShadow: "0 2px 4px rgba(0,0,0,0.3)",
             }}
           >
-            <button
-              type="button"
-              onClick={() => {
-                clearToken();
-                navigate("/login", { replace: true });
-              }}
-            >
-              Sair
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate("/trips")}
-              style={{
-                padding: "10px 12px",
-                borderRadius: ui.radius.md,
-                border: "1px solid #2c2c2c",
-                background: "#161616",
-                color: "rgba(255,255,255,0.9)",
-                cursor: "pointer",
-                minHeight: ui.controlHeight.md,
-              }}
-            >
-              &lt;- Voltar
-            </button>
-
-            <div>
-              <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 2 }}>Trip</div>
-              <h2
-                style={{
-                  margin: 0,
-                  fontSize: isNarrow ? 20 : 22,
-                  letterSpacing: -0.2,
-                  wordBreak: "break-word",
-                }}
-              >
-                {trip?.title ?? `#${tripId}`}
-              </h2>
-              {trip?.destinationName ? (
-                <div style={{ fontSize: 13, opacity: 0.72, marginTop: 4 }}>{trip.destinationName}</div>
-              ) : null}
+            {trip?.title ?? `#${tripId}`}
+          </h1>
+          {trip?.destinationName && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8, opacity: 0.9 }}>
+              <span style={{ fontWeight: 600 }}>{trip.destinationName}</span>
+              <span>•</span>
+              <span>
+                {new Date(trip.startDate).toLocaleDateString()} -{" "}
+                {new Date(trip.endDate).toLocaleDateString()}
+              </span>
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div
+        style={{
+          background: ui.colors.white,
+          borderBottom: `1px solid ${ui.colors.neutral[200]}`,
+          position: "sticky",
+          top: 73, // Height of Header (approx)
+          zIndex: ui.z.header - 1,
+        }}
+      >
+        <div className="container" style={{ padding: "12px 16px", overflowX: "auto" }}>
+          <div style={{ display: "flex", gap: ui.space.sm }}>
+            <NavLink to="summary" style={navLinkStyle}>
+              <PieChart size={16} />
+              Resumo
+            </NavLink>
+            <NavLink to="itinerary" style={navLinkStyle}>
+              <Calendar size={16} />
+              Itinerário
+            </NavLink>
+            <NavLink to="budget" style={navLinkStyle}>
+              <DollarSign size={16} />
+              Orçamento
+            </NavLink>
+            <NavLink to="expenses" style={navLinkStyle}>
+              <List size={16} />
+              Despesas
+            </NavLink>
           </div>
-
-          <div style={{ display: "flex", gap: 10 }} />
         </div>
+      </div>
 
-        <div
-          style={{
-            display: "flex",
-            gap: ui.space.sm,
-            flexWrap: "wrap",
-            padding: ui.space.sm,
-            borderRadius: ui.radius.lg,
-            background: "rgba(4,12,24,0.38)",
-            border: "1px solid rgba(255,255,255,0.12)",
-            backdropFilter: "blur(12px)",
-            width: isNarrow ? "100%" : "fit-content",
-            marginBottom: 18,
-          }}
-        >
-          <NavLink to="summary" style={({ isActive }) => tabStyle(isActive || currentTab === "summary")}>
-            Summary
-          </NavLink>
-
-          <NavLink to="budget" style={({ isActive }) => tabStyle(isActive || currentTab === "budget")}>
-            Budget
-          </NavLink>
-
-          <NavLink to="itinerary" style={({ isActive }) => tabStyle(isActive || currentTab === "itinerary")}>
-            Itinerary
-          </NavLink>
-
-          <NavLink to="expenses" style={({ isActive }) => tabStyle(isActive || currentTab === "expenses")}>
-            Expenses
-          </NavLink>
-        </div>
-
-        <div
-          style={{
-            padding: ui.space.xl,
-            borderRadius: ui.radius.xl,
-            background: "rgba(4,12,24,0.40)",
-            border: "1px solid rgba(255,255,255,0.12)",
-            backdropFilter: "blur(14px)",
-            overflow: "hidden",
-            minHeight: "calc(100vh - 190px)",
-            boxSizing: "border-box",
-          }}
-        >
-          <Outlet context={{ refreshKey, triggerRefresh, trip } satisfies TripOutletContext} />
-        </div>
+      {/* Content Area */}
+      <div className="container" style={{ padding: `${ui.space.xl}px 16px`, minHeight: "calc(100vh - 400px)" }}>
+        <Outlet context={{ refreshKey, triggerRefresh, trip } satisfies TripOutletContext} />
       </div>
     </div>
   );

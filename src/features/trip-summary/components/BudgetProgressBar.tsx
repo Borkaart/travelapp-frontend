@@ -1,5 +1,6 @@
 import React from "react";
 import type { BudgetHealth } from "../../../domain/budget";
+import { ui } from "../../../shared/ui/tokens";
 
 type Props = {
   health: BudgetHealth;
@@ -14,8 +15,8 @@ export default function BudgetProgressBar({ health }: Props) {
   return (
     <div style={wrap}>
       <div style={topRow}>
-        <span style={muted}>Gasto: {money(spent)}</span>
-        <span style={muted}>Limite: {money(limit)}</span>
+        <span style={labelStyle}>Gasto: {money(spent)}</span>
+        <span style={labelStyle}>Limite: {money(limit)}</span>
       </div>
 
       <div style={track}>
@@ -30,15 +31,15 @@ export default function BudgetProgressBar({ health }: Props) {
 
       <div style={bottomRow}>
         {status === "exceeded" ? (
-          <span style={{ ...muted, color: "crimson" }}>
+          <span style={{ ...labelStyle, color: ui.colors.error, fontWeight: "bold" }}>
             Estourado em {money(Math.abs(remaining))}
           </span>
         ) : (
-          <span style={muted}>Restante: {money(remaining)}</span>
+          <span style={labelStyle}>Restante: {money(remaining)}</span>
         )}
 
         <span style={pill(status)}>
-          {label(status)} • {Math.round(percentage)}%
+          {statusLabel(status)} • {Math.round(percentage)}%
         </span>
       </div>
     </div>
@@ -48,17 +49,17 @@ export default function BudgetProgressBar({ health }: Props) {
 function statusColor(status: BudgetHealth["status"]) {
   switch (status) {
     case "healthy":
-      return "linear-gradient(90deg, #22c55e, #16a34a)";
+      return ui.colors.success;
     case "warning":
-      return "linear-gradient(90deg, #facc15, #eab308)";
+      return ui.colors.warning;
     case "danger":
-      return "linear-gradient(90deg, #fb923c, #f97316)";
+      return ui.colors.accent[500]; // Orange
     case "exceeded":
-      return "linear-gradient(90deg, #ef4444, #dc2626)";
+      return ui.colors.error;
   }
 }
 
-function label(status: BudgetHealth["status"]) {
+function statusLabel(status: BudgetHealth["status"]) {
   switch (status) {
     case "healthy":
       return "Saudável";
@@ -79,71 +80,73 @@ function money(v: number) {
 }
 
 const wrap: React.CSSProperties = {
-  borderRadius: 14,
-  padding: 14,
-  border: "1px solid rgba(255,255,255,0.10)",
-  background: "rgba(255,255,255,0.04)",
+  borderRadius: ui.radius.lg,
+  padding: ui.space.md,
+  border: `1px solid ${ui.colors.neutral[200]}`,
+  background: ui.colors.white,
+  boxShadow: ui.shadows.sm,
 };
 
 const topRow: React.CSSProperties = {
   display: "flex",
   justifyContent: "space-between",
-  gap: 12,
-  fontSize: 12,
+  gap: ui.space.sm,
+  marginBottom: ui.space.xs,
 };
 
 const bottomRow: React.CSSProperties = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  gap: 12,
-  marginTop: 10,
+  gap: ui.space.sm,
+  marginTop: ui.space.sm,
 };
 
-const muted: React.CSSProperties = {
-  opacity: 0.8,
+const labelStyle: React.CSSProperties = {
+  fontSize: ui.typography.fontSize.xs,
+  color: ui.colors.neutral[600],
+  fontWeight: ui.typography.fontWeight.medium,
 };
 
 const track: React.CSSProperties = {
-  height: 10,
-  marginTop: 10,
-  borderRadius: 999,
-  background: "rgba(255,255,255,0.10)",
+  height: 8,
+  borderRadius: ui.radius.full,
+  background: ui.colors.neutral[100],
   overflow: "hidden",
 };
 
 const fill: React.CSSProperties = {
   height: "100%",
-  borderRadius: 999,
-  transition: "width 300ms ease",
+  borderRadius: ui.radius.full,
+  transition: "width 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
 };
 
 function pill(status: BudgetHealth["status"]): React.CSSProperties {
   const bg =
     status === "healthy"
-      ? "rgba(34,197,94,0.15)"
+      ? ui.colors.secondary[50]
       : status === "warning"
-      ? "rgba(250,204,21,0.15)"
+      ? ui.colors.accent[50]
       : status === "danger"
-      ? "rgba(249,115,22,0.15)"
-      : "rgba(239,68,68,0.15)";
+      ? ui.colors.accent[100]
+      : ui.colors.error + "1A"; // 10% opacity hex approximation
 
-  const border =
+  const text =
     status === "healthy"
-      ? "rgba(34,197,94,0.30)"
+      ? ui.colors.secondary[700]
       : status === "warning"
-      ? "rgba(250,204,21,0.30)"
+      ? ui.colors.accent[700]
       : status === "danger"
-      ? "rgba(249,115,22,0.30)"
-      : "rgba(239,68,68,0.30)";
+      ? ui.colors.accent[800]
+      : ui.colors.error;
 
   return {
-    fontSize: 12,
-    padding: "4px 10px",
-    borderRadius: 999,
+    fontSize: ui.typography.fontSize.xs,
+    padding: "2px 8px",
+    borderRadius: ui.radius.full,
     background: bg,
-    border: `1px solid ${border}`,
-    opacity: 0.95,
+    color: text,
+    fontWeight: ui.typography.fontWeight.semibold,
     whiteSpace: "nowrap",
   };
 }

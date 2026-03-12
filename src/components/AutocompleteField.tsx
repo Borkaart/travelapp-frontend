@@ -1,6 +1,7 @@
 import { useMemo, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { useMediaQuery } from "../shared/hooks/useMediaQuery";
 import { ui } from "../shared/ui/tokens";
+import { inputSurfaceStyle } from "../shared/ui/styles";
 
 type AutocompleteFieldProps<T> = {
   disabled?: boolean;
@@ -88,7 +89,7 @@ export default function AutocompleteField<T>({
   }
 
   return (
-    <label style={field}>
+    <div style={field}>
       <span style={labelStyle}>{label}</span>
       {helperText ? <span style={helperStyle}>{helperText}</span> : null}
       <div style={{ position: "relative" }}>
@@ -110,7 +111,7 @@ export default function AutocompleteField<T>({
           disabled={disabled}
           placeholder={inputPlaceholder}
           style={{
-            ...input,
+            ...inputSurfaceStyle(),
             minHeight: isNarrow ? ui.controlHeight.lg : ui.controlHeight.md,
             fontSize: isNarrow ? 16 : 15,
           }}
@@ -128,9 +129,10 @@ export default function AutocompleteField<T>({
                   const highlighted = safeHighlightedIndex === index;
 
                   return (
-                    <button
+                    <div
                       key={key}
-                      type="button"
+                      role="button"
+                      tabIndex={0}
                       onMouseEnter={() => setHighlightedIndex(index)}
                       onMouseDown={(event) => {
                         event.preventDefault();
@@ -139,7 +141,7 @@ export default function AutocompleteField<T>({
                       style={autocompleteItem(active, highlighted, isNarrow)}
                     >
                       {renderItem(item)}
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -149,7 +151,7 @@ export default function AutocompleteField<T>({
           </div>
         )}
       </div>
-    </label>
+    </div>
   );
 }
 
@@ -159,64 +161,54 @@ const field: CSSProperties = {
 };
 
 const labelStyle: CSSProperties = {
-  fontSize: 13,
-  opacity: 0.75,
+  fontSize: ui.typography.fontSize.sm,
+  fontWeight: ui.typography.fontWeight.medium,
+  color: ui.colors.neutral[700],
 };
 
 const helperStyle: CSSProperties = {
-  fontSize: 12,
-  opacity: 0.65,
-};
-
-const input: CSSProperties = {
-  width: "100%",
-  padding: "12px 12px",
-  borderRadius: ui.radius.md,
-  border: "1px solid rgba(255,255,255,0.12)",
-  background: "rgba(0,0,0,0.35)",
-  color: "#fff",
-  outline: "none",
+  fontSize: ui.typography.fontSize.xs,
+  color: ui.colors.neutral[500],
 };
 
 const autocompleteBox: CSSProperties = {
   position: "absolute",
-  top: "calc(100% + 8px)",
+  top: "calc(100% + 4px)",
   left: 0,
   right: 0,
   zIndex: 10,
   padding: ui.space.sm,
   borderRadius: ui.radius.lg,
-  border: "1px solid rgba(255,255,255,0.10)",
-  background: "rgba(8,16,28,0.96)",
-  boxShadow: "0 18px 48px rgba(0,0,0,0.28)",
-  backdropFilter: "blur(16px)",
+  border: `1px solid ${ui.colors.neutral[200]}`,
+  background: ui.colors.white,
+  boxShadow: ui.shadows.xl,
 };
 
 const autocompleteList: CSSProperties = {
   display: "grid",
-  gap: ui.space.xs,
+  gap: 2,
   maxHeight: 260,
   overflowY: "auto",
 };
 
 const autocompleteState: CSSProperties = {
   padding: ui.space.md,
-  opacity: 0.76,
+  color: ui.colors.neutral[500],
+  fontSize: ui.typography.fontSize.sm,
 };
 
 const autocompleteItem = (active: boolean, highlighted: boolean, isNarrow: boolean): CSSProperties => ({
   textAlign: "left",
   padding: isNarrow ? ui.space.lg : ui.space.md,
   borderRadius: ui.radius.md,
-  border: `1px solid ${
-    active ? "rgba(74,222,128,0.45)" : highlighted ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.08)"
-  }`,
+  border: "none",
   background: active
-    ? "rgba(74,222,128,0.12)"
+    ? ui.colors.primary[50]
     : highlighted
-      ? "rgba(255,255,255,0.08)"
-      : "rgba(255,255,255,0.03)",
-  color: "#fff",
+    ? ui.colors.neutral[100]
+    : "transparent",
+  color: active ? ui.colors.primary[900] : ui.colors.neutral[900],
   cursor: "pointer",
   minHeight: isNarrow ? ui.controlHeight.xl : ui.controlHeight.md,
+  transition: ui.transitions.fast,
 });

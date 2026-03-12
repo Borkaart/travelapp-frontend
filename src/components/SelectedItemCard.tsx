@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useMediaQuery } from "../shared/hooks/useMediaQuery";
 import { ui } from "../shared/ui/tokens";
+import { ghostButtonStyle } from "../shared/ui/styles";
 
 type SelectedItemCardProps = {
   actionLabel: string;
@@ -21,13 +22,36 @@ export default function SelectedItemCard({
 
   return (
     <div style={{ ...card, padding: isNarrow ? ui.space.md : ui.space.lg }}>
-      <div style={{ fontSize: 12, opacity: 0.68 }}>{label}</div>
-      <div style={{ marginTop: ui.space.xs, fontSize: isNarrow ? 16 : 18, fontWeight: 700, wordBreak: "break-word" }}>{title}</div>
-      {description ? <div style={{ marginTop: 4, opacity: 0.8 }}>{description}</div> : null}
+      <div style={{ fontSize: ui.typography.fontSize.xs, color: ui.colors.neutral[500], marginBottom: 4 }}>
+        {label}
+      </div>
+      <div
+        style={{
+          fontSize: isNarrow ? ui.typography.fontSize.base : ui.typography.fontSize.lg,
+          fontWeight: ui.typography.fontWeight.bold,
+          color: ui.colors.neutral[900],
+          wordBreak: "break-word",
+        }}
+      >
+        {title}
+      </div>
+      {description ? (
+        <div style={{ marginTop: 4, color: ui.colors.neutral[600], fontSize: ui.typography.fontSize.sm }}>
+          {description}
+        </div>
+      ) : null}
       <button
         type="button"
         onClick={onAction}
-        style={{ ...action, width: isNarrow ? "100%" : undefined, minHeight: ui.controlHeight.md }}
+        style={{
+          ...ghostButtonStyle(),
+          marginTop: ui.space.sm,
+          padding: 0,
+          color: ui.colors.primary[600],
+          justifyContent: "flex-start",
+          height: "auto",
+          minHeight: "auto",
+        }}
       >
         {actionLabel}
       </button>
@@ -36,18 +60,8 @@ export default function SelectedItemCard({
 }
 
 const card: CSSProperties = {
-  padding: ui.space.lg,
   borderRadius: ui.radius.lg,
-  border: "1px solid rgba(74,222,128,0.22)",
-  background: "rgba(74,222,128,0.08)",
-};
-
-const action: CSSProperties = {
-  marginTop: 10,
-  padding: "8px 10px",
-  borderRadius: ui.radius.sm,
-  border: "1px solid rgba(255,255,255,0.12)",
-  background: "rgba(255,255,255,0.06)",
-  color: "#fff",
-  cursor: "pointer",
+  border: `1px solid ${ui.colors.primary[200]}`,
+  background: ui.colors.primary[50],
+  boxShadow: ui.shadows.sm,
 };

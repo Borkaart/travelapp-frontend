@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Plane, User, Lock, Mail, ArrowRight } from "lucide-react";
 import api, { getApiErrorMessage } from "../api/client";
 import { setToken } from "../auth";
-import { inputSurfaceStyle, primaryButtonStyle, secondaryButtonStyle } from "../shared/ui/styles";
+import {
+  inputSurfaceStyle,
+  primaryButtonStyle,
+  secondaryButtonStyle,
+  glassCardStyle,
+} from "../shared/ui/styles";
 import { ui } from "../shared/ui/tokens";
+import { images } from "../shared/ui/assets";
 
 type LoginResponse = {
   accessToken?: string;
@@ -46,7 +53,7 @@ export default function LoginPage() {
       const token =
         res.data?.accessToken || res.data?.token || res.data?.jwt || res.data?.access_token;
 
-      if (!token) throw new Error("Token nao recebido no login.");
+      if (!token) throw new Error("Token não recebido no login.");
 
       setToken(token);
       navigate(redirectTo, { replace: true });
@@ -69,7 +76,7 @@ export default function LoginPage() {
         email: email.trim(),
         password,
       });
-      setSuccess("Usuario criado com sucesso. Agora faca login.");
+      setSuccess("Usuário criado com sucesso. Agora faça login.");
       setRegisterMode(false);
       setName("");
       setPassword("");
@@ -84,147 +91,209 @@ export default function LoginPage() {
     <div
       style={{
         minHeight: "100vh",
-        background:
-          "radial-gradient(1200px 600px at 20% 0%, #2a2a2a 0%, #141414 60%, #0f0f0f 100%)",
-        color: "#fff",
-        display: "grid",
-        placeItems: "center",
-        padding: 24,
-        boxSizing: "border-box",
+        background: `url(${images.loginBackground}) no-repeat center center / cover`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: ui.space.lg,
       }}
     >
-      <div style={{ width: "100%", maxWidth: 440 }}>
-        <div style={{ marginBottom: 16, textAlign: "left" }}>
-          <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 6 }}>Travel App</div>
-          <h1 style={{ margin: 0, fontSize: 30, letterSpacing: -0.3 }}>
-            {registerMode ? "Criar usuario" : "Entrar"}
-          </h1>
-          <div style={{ opacity: 0.75, marginTop: 8 }}>
-            {registerMode
-              ? "Cadastre uma conta para comecar a gerenciar suas viagens."
-              : "Acesse sua conta para gerenciar suas viagens."}
+      <div
+        className="fade-in"
+        style={{
+          ...glassCardStyle(),
+          width: "100%",
+          maxWidth: 440,
+          textAlign: "center",
+        }}
+      >
+        <div style={{ marginBottom: ui.space.xl }}>
+          <div
+            style={{
+              display: "inline-flex",
+              padding: ui.space.md,
+              background: ui.colors.primary[500],
+              borderRadius: ui.radius.full,
+              marginBottom: ui.space.md,
+              boxShadow: ui.shadows.lg,
+            }}
+          >
+            <Plane size={32} color="white" />
           </div>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: ui.typography.fontSize["3xl"],
+              fontWeight: ui.typography.fontWeight.bold,
+              color: ui.colors.neutral[900],
+            }}
+          >
+            {registerMode ? "Comece sua Aventura" : "Bem-vindo de Volta"}
+          </h1>
+          <p
+            style={{
+              marginTop: ui.space.sm,
+              color: ui.colors.neutral[600],
+              fontSize: ui.typography.fontSize.sm,
+            }}
+          >
+            {registerMode
+              ? "Crie sua conta para planejar viagens inesquecíveis."
+              : "Acesse para continuar sua jornada."}
+          </p>
         </div>
 
-        <div
-          style={{
-            padding: ui.space.xl,
-            borderRadius: ui.radius.xl,
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.08)",
-          }}
-        >
-          <form onSubmit={registerMode ? onRegister : onSubmit} style={{ display: "grid", gap: ui.space.md }}>
-            {registerMode ? (
-              <label style={{ display: "grid", gap: 6 }}>
-                <span style={{ fontSize: 13, opacity: 0.75 }}>Nome</span>
-                <input
-                  placeholder="Seu nome"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoComplete="name"
-                  disabled={loading}
-                  style={inputStyle}
-                />
-              </label>
-            ) : null}
-
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={{ fontSize: 13, opacity: 0.75 }}>Email</span>
-              <input
-                placeholder="user@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                disabled={loading}
-                style={inputStyle}
+        <form onSubmit={registerMode ? onRegister : onSubmit} style={{ display: "grid", gap: ui.space.md }}>
+          {registerMode && (
+            <div style={{ position: "relative" }}>
+              <User
+                size={20}
+                style={{
+                  position: "absolute",
+                  left: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: ui.colors.neutral[400],
+                }}
               />
-            </label>
-
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={{ fontSize: 13, opacity: 0.75 }}>Senha</span>
               <input
-                type="password"
-                placeholder="********"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete={registerMode ? "new-password" : "current-password"}
+                placeholder="Seu nome"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
                 disabled={loading}
-                style={inputStyle}
+                style={{
+                  ...inputSurfaceStyle(),
+                  paddingLeft: 40,
+                }}
               />
-            </label>
+            </div>
+          )}
 
-            <button
-              type="submit"
+          <div style={{ position: "relative" }}>
+            <Mail
+              size={20}
+              style={{
+                position: "absolute",
+                left: 12,
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: ui.colors.neutral[400],
+              }}
+            />
+            <input
+              placeholder="user@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
               disabled={loading}
               style={{
-                ...primaryButtonStyle(),
-                marginTop: 4,
-                padding: "12px 14px",
-                background: loading ? "rgba(74,222,128,0.10)" : "rgba(74,222,128,0.18)",
-                fontWeight: 800,
-                cursor: loading ? "not-allowed" : "pointer",
+                ...inputSurfaceStyle(),
+                paddingLeft: 40,
               }}
-            >
-              {loading ? (registerMode ? "Criando..." : "Entrando...") : registerMode ? "Criar usuario" : "Entrar"}
-            </button>
+            />
+          </div>
 
-            <button
-              type="button"
+          <div style={{ position: "relative" }}>
+            <Lock
+              size={20}
+              style={{
+                position: "absolute",
+                left: 12,
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: ui.colors.neutral[400],
+              }}
+            />
+            <input
+              type="password"
+              placeholder="********"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete={registerMode ? "new-password" : "current-password"}
               disabled={loading}
-              onClick={() => {
-                setRegisterMode((current) => !current);
-                setError(null);
-                setSuccess(null);
-              }}
               style={{
-                ...secondaryButtonStyle(),
-                padding: "12px 14px",
+                ...inputSurfaceStyle(),
+                paddingLeft: 40,
               }}
-            >
-              {registerMode ? "Voltar para login" : "Criar novo usuario"}
-            </button>
-          </form>
+            />
+          </div>
 
-          {error ? (
-            <div
-              style={{
-                marginTop: 12,
-                padding: 12,
-                borderRadius: 12,
-                background: "rgba(220,38,38,0.12)",
-                border: "1px solid rgba(220,38,38,0.30)",
-                color: "#fecaca",
-              }}
-            >
-              {error}
-            </div>
-          ) : null}
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              ...primaryButtonStyle(),
+              width: "100%",
+              marginTop: ui.space.sm,
+              opacity: loading ? 0.7 : 1,
+            }}
+          >
+            {loading ? (
+              "Processando..."
+            ) : (
+              <>
+                {registerMode ? "Criar Conta" : "Entrar"}
+                <ArrowRight size={18} style={{ marginLeft: 8 }} />
+              </>
+            )}
+          </button>
 
-          {success ? (
-            <div
-              style={{
-                marginTop: 12,
-                padding: 12,
-                borderRadius: 12,
-                background: "rgba(74,222,128,0.12)",
-                border: "1px solid rgba(74,222,128,0.30)",
-                color: "#d9ffe9",
-              }}
-            >
-              {success}
-            </div>
-          ) : null}
-        </div>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => {
+              setRegisterMode((current) => !current);
+              setError(null);
+              setSuccess(null);
+            }}
+            style={{
+              ...secondaryButtonStyle(),
+              width: "100%",
+              border: "none",
+              background: "transparent",
+              color: ui.colors.primary[600],
+              boxShadow: "none",
+            }}
+          >
+            {registerMode ? "Já tem uma conta? Entrar" : "Não tem conta? Cadastre-se"}
+          </button>
+        </form>
 
-        <div style={{ marginTop: 12, opacity: 0.55, fontSize: 12 }}>
-          Dica: use as mesmas credenciais do backend.
-        </div>
+        {error && (
+          <div
+            className="slide-up"
+            style={{
+              marginTop: ui.space.md,
+              padding: ui.space.md,
+              borderRadius: ui.radius.md,
+              background: "rgba(239, 68, 68, 0.1)",
+              border: `1px solid ${ui.colors.error}`,
+              color: ui.colors.error,
+              fontSize: ui.typography.fontSize.sm,
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div
+            className="slide-up"
+            style={{
+              marginTop: ui.space.md,
+              padding: ui.space.md,
+              borderRadius: ui.radius.md,
+              background: "rgba(34, 197, 94, 0.1)",
+              border: `1px solid ${ui.colors.success}`,
+              color: ui.colors.success,
+              fontSize: ui.typography.fontSize.sm,
+            }}
+          >
+            {success}
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-const inputStyle: React.CSSProperties = {
-  ...inputSurfaceStyle(),
-};
