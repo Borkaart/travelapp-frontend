@@ -11,12 +11,18 @@ export type Destination = {
 
 export type DestinationPlace = {
   name: string;
-  category?: string | null;
+  category?: "CULTURAL" | "NATURAL" | "GASTRONOMICAL" | string | null;
   formatted?: string | null;
   website?: string | null;
   imageUrl?: string | null;
   lat?: number | null;
   lon?: number | null;
+  description?: string | null;
+  openingHours?: string | null;
+  price?: string | null;
+  visitationTips?: string | null;
+  suggestedRoutes?: string[] | null;
+  rating?: number | null;
 };
 
 export type DestinationCountry = {

@@ -71,6 +71,7 @@ export default function TripSummary({ tripId, destinationId, onBack, refreshKey 
   const [selectedCost, setSelectedCost] = useState("");
   const [openItineraryAfterAdd, setOpenItineraryAfterAdd] = useState(true);
   const [savingPlace, setSavingPlace] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
 
   useEffect(() => {
     let alive = true;
@@ -391,6 +392,8 @@ export default function TripSummary({ tripId, destinationId, onBack, refreshKey 
         error={placesError}
         places={places}
         destinationName={data.destinationName}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
       />
 
       <HotelsSection
@@ -669,9 +672,9 @@ export default function TripSummary({ tripId, destinationId, onBack, refreshKey 
           <div style={{ ...modalBox, maxWidth: isNarrow ? "100%" : modalBox.maxWidth, maxHeight: "calc(100vh - 32px)", overflowY: "auto", padding: isNarrow ? ui.space.lg : 16 }}>
             <div style={modalHero(selectedPlace.imageUrl)}>
               <div style={modalHeroOverlay}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", width: "100%" }}>
                   <div>
-                    <div style={{ fontSize: 12, opacity: 0.72 }}>Adicionar ao itinerary</div>
+                    <div style={{ fontSize: 12, opacity: 0.72 }}>Adicionar ao itinerário</div>
                     <div style={{ marginTop: 6, fontSize: 28, fontWeight: 800 }}>{selectedPlace.name}</div>
                     <div style={{ marginTop: 6, opacity: 0.84 }}>
                       {selectedPlace.formatted || "Escolha um dia da viagem"}
@@ -685,25 +688,61 @@ export default function TripSummary({ tripId, destinationId, onBack, refreshKey 
               </div>
             </div>
 
-            <div style={{ marginTop: 16, display: "grid", gap: 12 }}>
+            <div style={{ marginTop: 16, display: "grid", gap: 16 }}>
+              {selectedPlace.description && (
+                <div style={descriptionBox}>
+                  {selectedPlace.description}
+                </div>
+              )}
+
               <div style={modalInfoGrid}>
                 <InfoBox
                   label="Categoria"
                   value={formatCategory(selectedPlace.category)}
                 />
-                <InfoBox
-                  label="Periodo sugerido"
-                  value={labelForSuggestedTime(selectedTime)}
-                />
-                <InfoBox
-                  label="Destino"
-                  value={selectedPlace.formatted || selectedPlace.name}
-                />
+                {selectedPlace.openingHours && (
+                  <InfoBox
+                    label="Funcionamento"
+                    value={selectedPlace.openingHours}
+                  />
+                )}
+                {selectedPlace.price && (
+                  <InfoBox
+                    label="Preço/Taxas"
+                    value={selectedPlace.price}
+                  />
+                )}
+                {selectedPlace.rating && (
+                  <InfoBox
+                    label="Avaliação"
+                    value={`⭐ ${selectedPlace.rating.toFixed(1)} / 5.0`}
+                  />
+                )}
               </div>
+
+              {selectedPlace.visitationTips && (
+                <div style={tipsBox}>
+                  <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4, color: "#bbf7d0" }}>💡 Dica de visitação</div>
+                  <div style={{ fontSize: 14, opacity: 0.9 }}>{selectedPlace.visitationTips}</div>
+                </div>
+              )}
+
+              {selectedPlace.suggestedRoutes && selectedPlace.suggestedRoutes.length > 0 && (
+                <div style={routesBox}>
+                  <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: "#93c5fd" }}>🗺️ Roteiros sugeridos</div>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {selectedPlace.suggestedRoutes.map((route, i) => (
+                      <span key={i} style={routeTag}>{route}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div style={{ height: 1, background: "rgba(255,255,255,0.1)", margin: "8px 0" }} />
 
               <div style={quickRow}>
                 <button type="button" onClick={() => setSelectedTime("09:00")} style={quickBtn}>
-                  Manha
+                  Manhã
                 </button>
                 <button type="button" onClick={() => setSelectedTime("14:00")} style={quickBtn}>
                   Tarde
@@ -713,7 +752,7 @@ export default function TripSummary({ tripId, destinationId, onBack, refreshKey 
                 </button>
                 {suggestedFreeSlot ? (
                   <button type="button" onClick={() => setSelectedTime(suggestedFreeSlot)} style={quickBtnAccent}>
-                    Proximo livre {suggestedFreeSlot}
+                    Próximo livre {suggestedFreeSlot}
                   </button>
                 ) : null}
               </div>
@@ -731,7 +770,7 @@ export default function TripSummary({ tripId, destinationId, onBack, refreshKey 
 
               <div style={{ display: "grid", gridTemplateColumns: isNarrow ? "1fr" : "1fr 1fr", gap: 10 }}>
                 <label>
-                  Horario sugerido
+                  Horário sugerido
                   <input
                     type="time"
                     value={selectedTime}
@@ -755,14 +794,14 @@ export default function TripSummary({ tripId, destinationId, onBack, refreshKey 
               {selectedDayActivities.length > 0 ? (
                 <div style={dayLoadBox}>
                   <div style={{ fontSize: 12, opacity: 0.68 }}>
-                    Esse dia ja tem {selectedDayActivities.length} atividade(s).
+                    Esse dia já tem {selectedDayActivities.length} atividade(s).
                   </div>
                   {hasTimeConflict ? (
                     <div style={{ marginTop: 6, color: "#fecaca" }}>
-                      Ja existe uma atividade nesse horario. Considere usar {suggestedFreeSlot || "outro horario"}.
+                      Já existe uma atividade nesse horário. Considere usar {suggestedFreeSlot || "outro horário"}.
                     </div>
                   ) : selectedTime ? (
-                    <div style={{ marginTop: 6, color: "#bbf7d0" }}>Horario livre para esse dia.</div>
+                    <div style={{ marginTop: 6, color: "#bbf7d0" }}>Horário livre para esse dia.</div>
                   ) : null}
                 </div>
               ) : null}
@@ -773,7 +812,7 @@ export default function TripSummary({ tripId, destinationId, onBack, refreshKey 
                   checked={openItineraryAfterAdd}
                   onChange={(e) => setOpenItineraryAfterAdd(e.target.checked)}
                 />
-                <span>Abrir o itinerary depois de adicionar</span>
+                <span>Abrir o itinerário depois de adicionar</span>
               </label>
 
               <div style={{ display: "flex", gap: 10, marginTop: 4, flexWrap: "wrap" }}>
@@ -811,6 +850,8 @@ function PlacesSection({
   loading,
   onAddToItinerary,
   places,
+  categoryFilter,
+  onCategoryChange,
 }: {
   destinationName?: string | null;
   error: string | null;
@@ -818,45 +859,83 @@ function PlacesSection({
   loading: boolean;
   onAddToItinerary: (place: DestinationPlace) => void;
   places: DestinationPlace[];
+  categoryFilter: string;
+  onCategoryChange: (cat: string) => void;
 }) {
+  const filtered =
+    categoryFilter === "ALL"
+      ? places
+      : places.filter((p) => p.category?.toUpperCase() === categoryFilter);
+
+  const categories = ["ALL", "CULTURAL", "NATURAL", "GASTRONOMICAL"];
+
   return (
     <section style={{ marginTop: 24 }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          flexWrap: "wrap",
+        }}
+      >
         <div>
-          <h2 style={{ margin: 0, fontSize: 20 }}>Pontos turisticos</h2>
+          <h2 style={{ margin: 0, fontSize: 20 }}>Pontos turísticos</h2>
           <div style={{ marginTop: 6, opacity: 0.76 }}>
-            Sugestoes para {destinationName || "o destino selecionado"}.
+            Sugestões enriquecidas para {destinationName || "o destino selecionado"}.
           </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => onCategoryChange(cat)}
+              style={{
+                ...btn(),
+                fontSize: 12,
+                background: categoryFilter === cat ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.06)",
+                borderColor: categoryFilter === cat ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.14)",
+                fontWeight: categoryFilter === cat ? 700 : 400,
+              }}
+            >
+              {cat === "ALL" ? "Todos" : formatCategory(cat)}
+            </button>
+          ))}
         </div>
       </div>
 
-      {loading && <div style={{ marginTop: 12, opacity: 0.8 }}>Buscando lugares para conhecer...</div>}
+      {loading && <div style={{ marginTop: 12, opacity: 0.8 }}>Buscando lugares incríveis...</div>}
 
       {!loading && error && (
         <div style={{ ...emptyBox, marginTop: 12 }}>
-          Nao foi possivel carregar os pontos turisticos: {error}
+          Não foi possível carregar os pontos turísticos: {error}
         </div>
       )}
 
-      {!loading && !error && places.length === 0 && (
+      {!loading && !error && filtered.length === 0 && (
         <div style={{ ...emptyBox, marginTop: 12 }}>
-          Nenhum ponto turistico encontrado para esse destino no momento.
+          {categoryFilter === "ALL"
+            ? "Nenhum ponto turístico encontrado para esse destino no momento."
+            : `Nenhum local na categoria ${formatCategory(categoryFilter)} encontrado.`}
         </div>
       )}
 
-      {!loading && !error && places.length > 0 && (
+      {!loading && !error && filtered.length > 0 && (
         <div style={placesGrid}>
-          {places.map((place, index) => (
-            <a
-              key={`${place.name}-${index}`}
-              href={place.website || buildMapsUrl(place)}
-              target="_blank"
-              rel="noreferrer"
-              style={placeCardLink}
-            >
+          {filtered.map((place, index) => (
+            <div key={`${place.name}-${index}`} style={placeCardLink}>
               <div style={placeCard(place.imageUrl)}>
                 <div style={placeCardOverlay}>
-                  <div style={placeActions}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div style={{ display: "flex", gap: 4 }}>
+                      {place.rating && (
+                        <div style={ratingBadge}>
+                          ⭐ {place.rating.toFixed(1)}
+                        </div>
+                      )}
+                    </div>
                     {itineraryDays.length > 0 ? (
                       <button
                         type="button"
@@ -867,21 +946,25 @@ function PlacesSection({
                         }}
                         style={placeActionBtn}
                       >
-                        Adicionar ao Itinerary
+                        + Itinerário
                       </button>
                     ) : null}
                   </div>
-                  <div style={{ fontSize: 12, opacity: 0.74 }}>
-                    {formatCategory(place.category)}
-                    {place.website ? " · Site oficial" : " · Abrir no mapa"}
+                  
+                  <div style={{ cursor: "pointer" }} onClick={() => onAddToItinerary(place)}>
+                    <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.9, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                      {formatCategory(place.category)}
+                    </div>
+                    <div style={{ marginTop: 4, fontSize: 18, fontWeight: 800, lineHeight: 1.2 }}>{place.name}</div>
+                    {place.price && (
+                      <div style={{ marginTop: 6, fontSize: 12, color: "#bbf7d0", fontWeight: 600 }}>
+                        💰 {place.price}
+                      </div>
+                    )}
                   </div>
-                  <div style={{ marginTop: 8, fontSize: 20, fontWeight: 800 }}>{place.name}</div>
-                  {place.formatted ? (
-                    <div style={{ marginTop: 8, opacity: 0.84, lineHeight: 1.45 }}>{place.formatted}</div>
-                  ) : null}
                 </div>
               </div>
-            </a>
+            </div>
           ))}
         </div>
       )}
@@ -997,6 +1080,10 @@ function formatMoney(v: number) {
 
 function formatCategory(value?: string | null) {
   if (!value) return "Lugar para conhecer";
+  const upper = value.toUpperCase();
+  if (upper === "CULTURAL") return "🏛️ Cultural";
+  if (upper === "NATURAL") return "🌳 Natural";
+  if (upper === "GASTRONOMICAL") return "🍴 Gastronômica";
   return value
     .split(".")
     .filter(Boolean)
@@ -1022,6 +1109,10 @@ function buildHotelMapsUrl(hotel: DestinationHotel) {
 
 function suggestTimeForCategory(category?: string | null) {
   if (!category) return "09:00";
+  const upper = category.toUpperCase();
+  if (upper === "GASTRONOMICAL") return "12:30";
+  if (upper === "CULTURAL") return "10:00";
+  if (upper === "NATURAL") return "08:30";
   if (category.includes("food")) return "12:30";
   if (category.includes("night")) return "20:00";
   return "09:00";
@@ -1270,6 +1361,54 @@ const checkboxRow: React.CSSProperties = {
   display: "flex",
   gap: 10,
   alignItems: "center",
+  fontSize: 14,
+  opacity: 0.9,
+  cursor: "pointer",
+};
+
+const ratingBadge: React.CSSProperties = {
+  padding: "4px 8px",
+  borderRadius: 8,
+  background: "rgba(0,0,0,0.6)",
+  backdropFilter: "blur(4px)",
+  fontSize: 12,
+  fontWeight: 700,
+  color: "#facc15",
+  border: "1px solid rgba(255,255,255,0.1)",
+};
+
+const descriptionBox: React.CSSProperties = {
+  padding: 16,
+  borderRadius: 12,
+  background: "rgba(255,255,255,0.03)",
+  border: "1px solid rgba(255,255,255,0.08)",
+  fontSize: 15,
+  lineHeight: 1.6,
+  color: "rgba(255,255,255,0.9)",
+};
+
+const tipsBox: React.CSSProperties = {
+  padding: 14,
+  borderRadius: 12,
+  background: "rgba(74, 222, 128, 0.05)",
+  border: "1px solid rgba(74, 222, 128, 0.15)",
+};
+
+const routesBox: React.CSSProperties = {
+  padding: 14,
+  borderRadius: 12,
+  background: "rgba(59, 130, 246, 0.05)",
+  border: "1px solid rgba(59, 130, 246, 0.15)",
+};
+
+const routeTag: React.CSSProperties = {
+  padding: "4px 10px",
+  borderRadius: 20,
+  background: "rgba(59, 130, 246, 0.15)",
+  border: "1px solid rgba(59, 130, 246, 0.2)",
+  fontSize: 12,
+  fontWeight: 600,
+  color: "#93c5fd",
 };
 
 const quickRow: React.CSSProperties = {
