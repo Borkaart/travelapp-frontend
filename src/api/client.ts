@@ -84,7 +84,6 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     const status = err?.response?.status;
-    const url = String(err?.config?.url || "");
 
     // Se der 401 em um endpoint que NÃO é público, desloga
     if (status === 401 && !isPublicEndpoint(err?.config)) {
