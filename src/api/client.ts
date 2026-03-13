@@ -20,15 +20,30 @@ const baseURL = String(
     "http://localhost:8080/api",
 ).replace(/\/+$/, "");
 
+// Garante que o baseURL inclua /api se não estiver presente (exceção para URLs absolutas)
+const finalBaseURL =
+  baseURL.startsWith("http") && !baseURL.includes("/api") ? `${baseURL}/api` : baseURL;
+
 const api = axios.create({
-  baseURL,
+  baseURL: finalBaseURL,
   timeout: 15000,
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
 });
 
-function isAuthEndpoint(config: InternalAxiosRequestConfig) {
+function isPublicEndpoint(config: InternalAxiosRequestConfig) {
   const url = String(config.url || "");
-  return url.startsWith("/auth");
+  const method = config.method?.toLowerCase();
+  
+  // Login e outros endpoints de auth
+  if (url.includes("/auth/")) return true;
+  
+  // Registro de usuário (POST /users)
+  if (url.includes("/users") && method === "post") return true;
+  
+  return false;
 }
 
 function redirectToLogin() {
@@ -41,8 +56,11 @@ api.interceptors.request.use(
   (config) => {
     const token = getToken();
 
-    if (token && isJwtExpired(token) && isAuthEndpoint(config)) {
-      clearToken();
+    // Se for endpoint público, não manda Authorization
+    if (isPublicEndpoint(config)) {
+      if (token && isJwtExpired(token)) {
+        clearToken();
+      }
       return config;
     }
 
@@ -68,7 +86,8 @@ api.interceptors.response.use(
     const status = err?.response?.status;
     const url = String(err?.config?.url || "");
 
-    if (status === 401 && !url.startsWith("/auth")) {
+    // Se der 401 em um endpoint que NÃO é público, desloga
+    if (status === 401 && !isPublicEndpoint(err?.config)) {
       clearToken();
       redirectToLogin();
     }
