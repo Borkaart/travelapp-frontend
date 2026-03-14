@@ -47,18 +47,26 @@
   --text-selected-desc: var(--neutral-600);
 
   /* Itinerary Specific (Light) */
-  --itinerary-day-bg: #ffffff;
+  --itinerary-day-bg: linear-gradient(135deg, #ffffff, #f9fafb);
   --itinerary-day-border: var(--neutral-200);
-  --itinerary-day-text: var(--neutral-900);
-  --itinerary-day-active-bg: #eff6ff;
-  --itinerary-day-active-border: #3b82f6;
-  --itinerary-day-active-text: #1e40af;
-  --itinerary-timeline-line: var(--neutral-200);
-  --itinerary-timeline-dot: #3b82f6;
+  --itinerary-day-text: var(--text-primary);
+  --itinerary-day-active-bg: linear-gradient(135deg, #fef3c7, #ffedd5); /* Amber to Orange light */
+  --itinerary-day-active-border: #f59e0b; /* Amber 500 */
+  --itinerary-day-active-text: #b45309; /* Amber 700 */
+  --itinerary-day-active-shadow: 0 12px 32px rgba(245, 158, 11, 0.16);
+  --itinerary-timeline-line: linear-gradient(180deg, #fcd34d, transparent);
+  --itinerary-timeline-dot: #fbbf24;
+  --itinerary-timeline-dot-shadow: 0 0 0 5px rgba(251, 191, 36, 0.3);
   --itinerary-card-bg: #ffffff;
   --itinerary-card-border: var(--neutral-200);
   --itinerary-badge-bg: var(--neutral-100);
-  --itinerary-badge-text: var(--neutral-700);
+  --itinerary-badge-border: var(--neutral-200);
+  --itinerary-badge-text: var(--text-secondary);
+  --itinerary-agenda-shell: linear-gradient(180deg, #ffffff, #f3f4f6);
+  --itinerary-drag-handle-bg: var(--neutral-100);
+  --itinerary-drag-handle-border: var(--neutral-300);
+  --itinerary-notes-bg: var(--neutral-50);
+  --itinerary-notes-border: var(--neutral-200);
 
   color: var(--text-primary);
   background-color: var(--bg-body);
@@ -100,18 +108,26 @@
   --text-active: #f0f9ff; /* primary-50 */
 
   /* Itinerary Specific (Dark) */
-  --itinerary-day-bg: #18181b;
-  --itinerary-day-border: #27272a;
-  --itinerary-day-text: #f4f4f5;
-  --itinerary-day-active-bg: #172554;
-  --itinerary-day-active-border: #3b82f6;
-  --itinerary-day-active-text: #dbeafe;
-  --itinerary-timeline-line: #27272a;
-  --itinerary-timeline-dot: #3b82f6;
-  --itinerary-card-bg: #18181b;
-  --itinerary-card-border: #27272a;
-  --itinerary-badge-bg: #27272a;
-  --itinerary-badge-text: #d4d4d8;
+  --itinerary-day-bg: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  --itinerary-day-border: rgba(255,255,255,0.10);
+  --itinerary-day-text: #fff;
+  --itinerary-day-active-bg: linear-gradient(135deg, rgba(251,191,36,0.20), rgba(249,115,22,0.14));
+  --itinerary-day-active-border: rgba(251,191,36,0.38);
+  --itinerary-day-active-text: #fff;
+  --itinerary-day-active-shadow: 0 12px 32px rgba(249,115,22,0.16);
+  --itinerary-timeline-line: linear-gradient(180deg, rgba(251,191,36,0.30), rgba(255,255,255,0.04));
+  --itinerary-timeline-dot: #fbbf24;
+  --itinerary-timeline-dot-shadow: 0 0 0 5px rgba(251, 191, 36, 0.16);
+  --itinerary-card-bg: rgba(255,255,255,0.04);
+  --itinerary-card-border: rgba(255,255,255,0.10);
+  --itinerary-badge-bg: rgba(255,255,255,0.06);
+  --itinerary-badge-border: rgba(255,255,255,0.10);
+  --itinerary-badge-text: #fff;
+  --itinerary-agenda-shell: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  --itinerary-drag-handle-bg: rgba(255,255,255,0.03);
+  --itinerary-drag-handle-border: rgba(255,255,255,0.16);
+  --itinerary-notes-bg: rgba(4,12,24,0.30);
+  --itinerary-notes-border: rgba(255,255,255,0.06);
 }
 
 /* Reset & Base */

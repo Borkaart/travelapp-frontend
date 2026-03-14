@@ -557,8 +557,9 @@ const heroStats: React.CSSProperties = {
 const statCard: React.CSSProperties = {
   borderRadius: ui.radius.xl,
   padding: 16,
-  border: "1px solid rgba(255,255,255,0.10)",
-  background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
+  border: "1px solid var(--itinerary-day-border)",
+  background: "var(--itinerary-day-bg)",
+  color: "var(--itinerary-day-text)",
 };
 
 const dayRail: React.CSSProperties = {
@@ -571,20 +572,19 @@ const dayCard = (active: boolean): React.CSSProperties => ({
   textAlign: "left",
   padding: 16,
   borderRadius: ui.radius.xl,
-  border: `1px solid ${active ? "rgba(251,191,36,0.38)" : "rgba(255,255,255,0.10)"}`,
-  background: active
-    ? "linear-gradient(135deg, rgba(251,191,36,0.20), rgba(249,115,22,0.14))"
-    : "linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))",
-  color: "#fff",
+  border: `1px solid ${active ? "var(--itinerary-day-active-border)" : "var(--itinerary-day-border)"}`,
+  background: active ? "var(--itinerary-day-active-bg)" : "var(--itinerary-day-bg)",
+  color: active ? "var(--itinerary-day-active-text)" : "var(--itinerary-day-text)",
   cursor: "pointer",
-  boxShadow: active ? "0 12px 32px rgba(249,115,22,0.16)" : "none",
+  boxShadow: active ? "var(--itinerary-day-active-shadow)" : "none",
+  transition: ui.transitions.fast,
 });
 
 const agendaShell: React.CSSProperties = {
   borderRadius: 24,
   padding: 20,
-  border: "1px solid rgba(255,255,255,0.12)",
-  background: "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))",
+  border: "1px solid var(--itinerary-card-border)",
+  background: "var(--itinerary-agenda-shell)",
 };
 
 const agendaHeader: React.CSSProperties = {
@@ -631,8 +631,9 @@ const timeBadge: React.CSSProperties = {
   textAlign: "center",
   padding: "8px 10px",
   borderRadius: 999,
-  border: "1px solid rgba(255,255,255,0.10)",
-  background: "rgba(255,255,255,0.06)",
+  border: "1px solid var(--itinerary-badge-border)",
+  background: "var(--itinerary-badge-bg)",
+  color: "var(--itinerary-day-text)",
   fontWeight: 700,
 };
 
@@ -648,8 +649,8 @@ const timelineDot: React.CSSProperties = {
   width: 12,
   height: 12,
   borderRadius: "50%",
-  background: "#fbbf24",
-  boxShadow: "0 0 0 5px rgba(251,191,36,0.16)",
+  background: "var(--itinerary-timeline-dot)",
+  boxShadow: "var(--itinerary-timeline-dot-shadow)",
   zIndex: 1,
 };
 
@@ -658,14 +659,14 @@ const timelineLine: React.CSSProperties = {
   top: 30,
   bottom: -20,
   width: 2,
-  background: "linear-gradient(180deg, rgba(251,191,36,0.30), rgba(255,255,255,0.04))",
+  background: "var(--itinerary-timeline-line)",
 };
 
 const activityCard: React.CSSProperties = {
   padding: 16,
   borderRadius: ui.radius.xl,
-  border: "1px solid rgba(255,255,255,0.10)",
-  background: "rgba(255,255,255,0.04)",
+  border: "1px solid var(--itinerary-card-border)",
+  background: "var(--itinerary-card-bg)",
 };
 
 const metaRow: React.CSSProperties = {
@@ -681,16 +682,17 @@ const infoPill: React.CSSProperties = {
   alignItems: "center",
   padding: "7px 10px",
   borderRadius: 999,
-  background: "rgba(255,255,255,0.06)",
-  border: "1px solid rgba(255,255,255,0.08)",
+  background: "var(--itinerary-badge-bg)",
+  border: "1px solid var(--itinerary-badge-border)",
 };
 
 const notesBox: React.CSSProperties = {
   marginTop: ui.space.md,
   padding: ui.space.md,
   borderRadius: ui.radius.lg,
-  background: "rgba(4,12,24,0.30)",
-  border: "1px solid rgba(255,255,255,0.06)",
+  background: "var(--itinerary-notes-bg)",
+  border: "1px solid var(--itinerary-notes-border)",
+  color: "var(--text-primary)",
   opacity: 0.85,
   lineHeight: 1.5,
 };
@@ -698,15 +700,16 @@ const notesBox: React.CSSProperties = {
 const emptyBox: React.CSSProperties = {
   borderRadius: 16,
   padding: ui.space.xl,
-  border: "1px solid rgba(255,255,255,0.10)",
-  background: "rgba(255,255,255,0.03)",
+  border: "1px solid var(--itinerary-card-border)",
+  background: "var(--itinerary-card-bg)",
 };
 
 const modalCard: React.CSSProperties = {
-  border: "1px solid rgba(255,255,255,0.12)",
+  border: "1px solid var(--itinerary-card-border)",
   padding: 16,
   borderRadius: 16,
-  background: "rgba(4,12,24,0.45)",
+  background: "var(--bg-surface)",
+  boxShadow: ui.shadows.xl,
   width: "100%",
   maxWidth: 640,
 };
@@ -717,16 +720,17 @@ const primaryBtn: React.CSSProperties = {
 
 const ghostBtn: React.CSSProperties = {
   ...ghostButtonStyle(),
-  background: "rgba(255,255,255,0.06)",
-  color: "rgba(255,255,255,0.9)",
+  background: "var(--itinerary-badge-bg)",
+  border: "1px solid var(--itinerary-badge-border)",
+  color: "var(--itinerary-day-text)",
 };
 
 const dragHandle: React.CSSProperties = {
   padding: "10px 12px",
   borderRadius: ui.radius.md,
-  border: "1px dashed rgba(255,255,255,0.16)",
-  background: "rgba(255,255,255,0.03)",
-  color: "rgba(255,255,255,0.82)",
+  border: "1px dashed var(--itinerary-drag-handle-border)",
+  background: "var(--itinerary-drag-handle-bg)",
+  color: "var(--text-secondary)",
   cursor: "grab",
   minHeight: ui.controlHeight.md,
 };
@@ -739,17 +743,18 @@ const activityTypeTag = (type: ActivityType): React.CSSProperties => ({
   fontSize: 12,
   fontWeight: 700,
   letterSpacing: 0.2,
-  border: "1px solid rgba(255,255,255,0.08)",
+  border: "1px solid var(--itinerary-badge-border)",
+  color: "var(--itinerary-day-text)",
   background:
     type === "FOOD"
-      ? "rgba(251,191,36,0.18)"
+      ? "var(--itinerary-badge-bg)"
       : type === "TRANSPORT"
-        ? "rgba(56,189,248,0.18)"
+        ? "var(--itinerary-badge-bg)"
         : type === "HOTEL"
-          ? "rgba(167,139,250,0.18)"
+          ? "var(--itinerary-badge-bg)"
           : type === "TOUR"
-            ? "rgba(34,197,94,0.18)"
+            ? "var(--itinerary-badge-bg)"
             : type === "SHOPPING"
-              ? "rgba(244,114,182,0.18)"
-              : "rgba(255,255,255,0.08)",
+              ? "var(--itinerary-badge-bg)"
+              : "var(--itinerary-badge-bg)",
 });
