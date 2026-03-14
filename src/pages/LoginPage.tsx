@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Plane, User, Lock, Mail, ArrowRight } from "lucide-react";
 import api, { getApiErrorMessage } from "../api/client";
 import { setToken } from "../auth";
-import { useAuth } from "../shared/context/AuthContext";
+import { useAuth } from "../shared/contexts/AuthContext";
 import {
   inputSurfaceStyle,
   primaryButtonStyle,

@@ -1,7 +1,7 @@
 import React from "react";
 import { ToastProvider } from "../../shared/toast/ToastProvider";
 import { ThemeProvider } from "../../shared/contexts/ThemeContext";
-import { AuthProvider } from "../../shared/context/AuthContext";
+import { AuthProvider } from "../../shared/contexts/AuthContext";
 
 type Props = { children: React.ReactNode };
 

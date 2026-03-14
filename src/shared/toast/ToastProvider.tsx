@@ -18,7 +18,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     window.setTimeout(() => remove(id), toast.durationMs);
   }, [remove]);
 
-  const value = useMemo(() => ({ push, remove }), [push, remove]);
+  const showToast = useCallback((kind: ToastKind, title: string, message?: string) => {
+    push({ kind, title, message });
+  }, [push]);
+
+  const value = useMemo(() => ({ push, showToast, remove }), [push, showToast, remove]);
 
   return (
     <ToastContext.Provider value={value}>

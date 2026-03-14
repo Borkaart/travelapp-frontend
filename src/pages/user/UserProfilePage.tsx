@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { User, Mail, MapPin, Calendar, Phone, Globe, Instagram, Facebook, Camera, Loader2, ArrowRight } from "lucide-react";
-import { useAuth } from "../../shared/context/AuthContext";
+import { useAuth } from "../../shared/contexts/AuthContext";
 import api, { getApiErrorMessage } from "../../api/client";
 import { useNavigate } from "react-router-dom";
 import { ui } from "../../shared/ui/tokens";
 import { inputSurfaceStyle, primaryButtonStyle, secondaryButtonStyle } from "../../shared/ui/styles";
-import { useToast } from "../../shared/toast/ToastProvider";
+import { useToast } from "../../shared/toast/toast";
 
 export default function UserProfilePage({ isSetupMode = false }: { isSetupMode?: boolean }) {
   const { user, refreshUser } = useAuth();

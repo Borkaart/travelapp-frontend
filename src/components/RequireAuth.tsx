@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { getToken, isJwtExpired, clearToken } from "../auth";
-import { useAuth } from "../shared/context/AuthContext";
+import { useAuth } from "../shared/contexts/AuthContext";
 
 export default function RequireAuth({ children }: { children: React.ReactNode }) {
   const location = useLocation();

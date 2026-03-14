@@ -12,6 +12,7 @@ export type Toast = {
 
 export type ToastContextValue = {
   push: (t: Omit<Toast, "id">) => void;
+  showToast: (kind: ToastKind, title: string, message?: string) => void;
   remove: (id: string) => void;
 };
 

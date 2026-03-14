@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { LogOut, Map, Plus } from "lucide-react";
 import { clearToken } from "../auth";
-import { useAuth } from "../shared/context/AuthContext";
+import { useAuth } from "../shared/contexts/AuthContext";
 import { ui } from "../shared/ui/tokens";
 import { images } from "../shared/ui/assets";
 import { ghostButtonStyle, primaryButtonStyle } from "../shared/ui/styles";
