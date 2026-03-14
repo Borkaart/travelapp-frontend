@@ -7,6 +7,13 @@ export type ActivityType =
   | "TOUR"
   | "HOTEL"
   | "SHOPPING"
+  | "FLIGHT"
+  | "HIKING"
+  | "BEACH"
+  | "NIGHTLIFE"
+  | "CULTURE"
+  | "SPORTS"
+  | "RELAXATION"
   | "OTHER";
 
 export type Activity = {
