@@ -408,13 +408,20 @@ export default function TripItineraryPage() {
             <label>
               Tipo
               <select value={type} onChange={(e) => setType(e.target.value as ActivityType)} disabled={saving}>
-                <option value="SIGHTSEEING">Sightseeing</option>
-                <option value="FOOD">Food</option>
-                <option value="TRANSPORT">Transport</option>
-                <option value="HOTEL">Hotel</option>
-                <option value="TOUR">Tour</option>
-                <option value="SHOPPING">Shopping</option>
-                <option value="OTHER">Other</option>
+                <option value="SIGHTSEEING">Ponto Turístico</option>
+                <option value="FOOD">Alimentação</option>
+                <option value="TRANSPORT">Transporte</option>
+                <option value="HOTEL">Hospedagem</option>
+                <option value="TOUR">Passeio/Tour</option>
+                <option value="SHOPPING">Compras</option>
+                <option value="FLIGHT">Voo</option>
+                <option value="HIKING">Trilha/Natureza</option>
+                <option value="BEACH">Praia</option>
+                <option value="NIGHTLIFE">Vida Noturna</option>
+                <option value="CULTURE">Cultura/Museu</option>
+                <option value="SPORTS">Esportes/Aventura</option>
+                <option value="RELAXATION">Descanso/SPA</option>
+                <option value="OTHER">Outro</option>
               </select>
             </label>
 
@@ -524,6 +531,13 @@ function labelForType(type: ActivityType) {
     HOTEL: "Hospedagem",
     TOUR: "Tour",
     SHOPPING: "Compras",
+    FLIGHT: "Voo",
+    HIKING: "Trilha",
+    BEACH: "Praia",
+    NIGHTLIFE: "Vida Noturna",
+    CULTURE: "Cultura",
+    SPORTS: "Esportes",
+    RELAXATION: "Descanso",
     OTHER: "Outro",
   }[type];
 }
