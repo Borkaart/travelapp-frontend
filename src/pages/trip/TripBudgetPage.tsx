@@ -101,8 +101,8 @@ export default function TripBudgetPage() {
           maxWidth: 420,
           padding: ui.space.xl,
           borderRadius: ui.radius.xl,
-          border: "1px solid rgba(255,255,255,0.10)",
-          background: "rgba(255,255,255,0.04)",
+          border: "1px solid var(--itinerary-card-border)",
+          background: "var(--itinerary-card-bg)",
         }}
       >
         <label>

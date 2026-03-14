@@ -344,6 +344,22 @@ export default function TripItineraryPage() {
                             onReorder(draggingActivityId, activity.id);
                           }
                         }}
+                        onTouchStart={() => {
+                          // Simple press-and-hold for mobile reordering simulation
+                          const timer = setTimeout(() => {
+                            setDraggingActivityId(activity.id);
+                          }, 500);
+                          (window as any)._touchTimer = timer;
+                        }}
+                        onTouchEnd={() => {
+                          const timer = (window as any)._touchTimer;
+                          if (timer) clearTimeout(timer);
+                          
+                          // If we were "dragging" on mobile, and released over another item,
+                          // we would need a drop target. Native touch doesn't trigger onDrop easily.
+                          // For now, we mainly provide the visual cue of "dragging".
+                          // A full mobile dnd would require coordinate tracking.
+                        }}
                       >
                         <div style={{ ...timeColumn, justifyContent: isNarrow ? "flex-start" : "flex-end", paddingTop: isNarrow ? 0 : 10 }}>
                           <div style={timeBadge}>{activity.time ? String(activity.time).slice(0, 5) : "Livre"}</div>
@@ -365,9 +381,6 @@ export default function TripItineraryPage() {
                             </div>
 
                             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                              <button type="button" disabled={saving} style={dragHandle}>
-                                Arrastar
-                              </button>
                               <button type="button" onClick={() => openEditModal(activity)} disabled={saving} style={ghostBtn}>
                                 Editar
                               </button>
@@ -681,6 +694,7 @@ const activityCard: React.CSSProperties = {
   borderRadius: ui.radius.xl,
   border: "1px solid var(--itinerary-card-border)",
   background: "var(--itinerary-card-bg)",
+  cursor: "grab",
 };
 
 const metaRow: React.CSSProperties = {
@@ -740,13 +754,7 @@ const ghostBtn: React.CSSProperties = {
 };
 
 const dragHandle: React.CSSProperties = {
-  padding: "10px 12px",
-  borderRadius: ui.radius.md,
-  border: "1px dashed var(--itinerary-drag-handle-border)",
-  background: "var(--itinerary-drag-handle-bg)",
-  color: "var(--text-secondary)",
-  cursor: "grab",
-  minHeight: ui.controlHeight.md,
+  display: "none",
 };
 
 const activityTypeTag = (type: ActivityType): React.CSSProperties => ({

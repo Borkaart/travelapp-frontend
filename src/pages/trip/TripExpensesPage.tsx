@@ -329,13 +329,10 @@ const emptyBox: React.CSSProperties = {
   marginTop: 16,
   borderRadius: ui.radius.lg,
   padding: ui.space.lg,
-  border: "1px solid rgba(255,255,255,0.12)",
-  background: "rgba(255,255,255,0.03)",
+  border: "1px solid var(--itinerary-card-border)",
+  background: "var(--itinerary-card-bg)",
 };
 
 const primaryBtn: React.CSSProperties = {
   ...primaryButtonStyle(),
-  border: "1px solid rgba(255,255,255,0.14)",
-  background: "rgba(255,255,255,0.10)",
-  color: "#e8eefc",
 };
