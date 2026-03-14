@@ -1095,19 +1095,6 @@ function formatCategory(value?: string | null) {
     .join(" / ");
 }
 
-function buildMapsUrl(place: DestinationPlace) {
-  if (place.lat != null && place.lon != null) {
-    return `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lon}`;
-  }
-
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name)}`;
-}
-
-function buildHotelMapsUrl(hotel: DestinationHotel) {
-  if (hotel.latitude != null && hotel.longitude != null) {
-    return `https://www.google.com/maps/search/?api=1&query=${hotel.latitude},${hotel.longitude}`;
-  }
-
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.name)}`;
 }
 
@@ -1120,14 +1107,6 @@ function suggestTimeForCategory(category?: string | null) {
   if (category.includes("food")) return "12:30";
   if (category.includes("night")) return "20:00";
   return "09:00";
-}
-
-function labelForSuggestedTime(time: string) {
-  if (!time) return "Sem sugestao";
-  const hour = Number(time.slice(0, 2));
-  if (hour < 12) return "Manha";
-  if (hour < 18) return "Tarde";
-  return "Noite";
 }
 
 function suggestBestDayId(itineraryDays: ItineraryDay[], dayActivityCounts: Record<number, number>) {
