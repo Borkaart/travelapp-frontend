@@ -1095,6 +1095,11 @@ function formatCategory(value?: string | null) {
     .join(" / ");
 }
 
+function buildHotelMapsUrl(hotel: DestinationHotel) {
+  if (hotel.latitude != null && hotel.longitude != null) {
+    return `https://www.google.com/maps/search/?api=1&query=${hotel.latitude},${hotel.longitude}`;
+  }
+
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.name)}`;
 }
 
