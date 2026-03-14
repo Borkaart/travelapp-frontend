@@ -106,9 +106,7 @@ export default function UserProfilePage({ isSetupMode = false }: { isSetupMode?:
 
       const base64Data = await base64Promise;
 
-      await api.put("/users/profile/image", JSON.stringify(base64Data), {
-        headers: { "Content-Type": "application/json" }
-      });
+      await api.put("/users/profile/image", { imageUrl: base64Data });
       
       await refreshUser();
       showToast("success", "Foto de perfil atualizada!");
