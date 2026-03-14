@@ -82,9 +82,7 @@ export default function UserProfilePage({ isSetupMode = false }: { isSetupMode?:
       await refreshUser();
       showToast("success", "Perfil salvo com sucesso!");
       
-      if (isSetupMode) {
-        navigate("/trips", { replace: true });
-      }
+      navigate("/trips", { replace: true });
     } catch (err) {
       showToast("error", getApiErrorMessage(err) || "Erro ao salvar perfil");
     } finally {
