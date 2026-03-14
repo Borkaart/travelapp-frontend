@@ -75,3 +75,33 @@ export async function updateActivity(id: number, payload: ActivityUpdateRequest)
 export async function deleteActivity(id: number): Promise<void> {
   await api.delete(`/activities/${id}`);
 }
+
+export type AmadeusActivityData = {
+  id: string;
+  name: string;
+  description?: string;
+  shortDescription?: string;
+  price?: {
+    amount: string;
+    currencyCode: string;
+  };
+  pictures?: string[];
+  bookingLink?: string;
+  rating?: number;
+};
+
+export async function searchAmadeusActivities(
+  lat: number,
+  lon: number,
+  radius?: number,
+): Promise<AmadeusActivityData[]> {
+  const res = await api.get<AmadeusActivityData[]>("/destinations/search-activities", {
+    params: { lat, lon, radius },
+  });
+  return res.data;
+}
+
+export async function getAmadeusActivitiesByDestination(destinationId: number): Promise<AmadeusActivityData[]> {
+  const res = await api.get<AmadeusActivityData[]>(`/destinations/${destinationId}/activities`);
+  return res.data;
+}

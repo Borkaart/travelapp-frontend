@@ -61,3 +61,42 @@ export async function getTripSummary(tripId: number): Promise<TripSummary> {
   const res = await api.get<TripSummary>(`/trips/${tripId}/summary`);
   return res.data;
 }
+
+export type TripParserResponse = {
+  data: {
+    trip: {
+      title?: string;
+      startDate?: string;
+      endDate?: string;
+      travelProducts: Array<{
+        startStatus?: string;
+        flightData?: {
+          departureAt?: string;
+          arrivalAt?: string;
+          iataCode?: string;
+          flightNumber?: string;
+          departureLocation?: { name?: string; address?: string; cityName?: string };
+          arrivalLocation?: { name?: string; address?: string; cityName?: string };
+        };
+        hotelData?: {
+          checkInAt?: string;
+          checkOutAt?: string;
+          hotelName?: string;
+          hotelLocation?: { name?: string; address?: string; cityName?: string };
+          confirmationNumber?: string;
+        };
+        trainData?: {
+          departureAt?: string;
+          arrivalAt?: string;
+          departureLocation?: { name?: string; address?: string; cityName?: string };
+          arrivalLocation?: { name?: string; address?: string; cityName?: string };
+        };
+      }>;
+    };
+  };
+};
+
+export async function parseTripConfirmation(tripId: number, base64Content: string): Promise<TripParserResponse> {
+  const res = await api.post<TripParserResponse>(`/trips/${tripId}/parse-confirmation`, { base64Content });
+  return res.data;
+}

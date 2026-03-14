@@ -96,17 +96,24 @@ export default function UserProfilePage({ isSetupMode = false }: { isSetupMode?:
     
     setUploadingImage(true);
     try {
-      // Usaremos um formData genérico ou serviço de upload no backend, mas 
-      // como a API pede só a string da URL em PUT /profile/image, simularemos o upload
-      // Ex: upload to S3, Pega URL, salva no backend.
-      // Vou simular chamando o endpoint com fallback temporário.
-      const pseudoUrl = URL.createObjectURL(file);
-      await api.put("/users/profile/image", JSON.stringify(pseudoUrl), {
+      // Converter para Base64 para persistência real no banco
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const base64Data = await base64Promise;
+
+      await api.put("/users/profile/image", JSON.stringify(base64Data), {
         headers: { "Content-Type": "application/json" }
       });
+      
       await refreshUser();
-      showToast("success", "Foto atualizada (simulada localmente)");
+      showToast("success", "Foto de perfil atualizada!");
     } catch (err) {
+      console.error(err);
       showToast("error", "Erro ao atualizar foto de perfil");
     } finally {
       setUploadingImage(false);
