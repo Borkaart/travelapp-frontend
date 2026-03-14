@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { LogOut, Map, Plus } from "lucide-react";
 import { clearToken } from "../auth";
+import { useAuth } from "../shared/context/AuthContext";
 import { ui } from "../shared/ui/tokens";
 import { images } from "../shared/ui/assets";
 import { ghostButtonStyle, primaryButtonStyle } from "../shared/ui/styles";
@@ -8,6 +9,14 @@ import { ThemeToggle } from "../shared/ui/ThemeToggle";
 
 export default function Header() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  const getAvatarGradient = () => {
+    if (!user) return "linear-gradient(135deg, #f59e0b, #ea580c)";
+    if (user.gender === "MALE") return "linear-gradient(135deg, #3b82f6, #1d4ed8)";
+    if (user.gender === "FEMALE") return "linear-gradient(135deg, #ec4899, #be185d)";
+    return "linear-gradient(135deg, #f59e0b, #ea580c)";
+  };
 
   return (
     <header
@@ -87,17 +96,23 @@ export default function Header() {
         />
 
         <div style={{ display: "flex", alignItems: "center", gap: ui.space.sm }}>
-          <img
-            src={images.userAvatar}
-            alt="User"
+          <div 
+            onClick={() => navigate("/profile")}
             style={{
               width: 32,
               height: 32,
               borderRadius: ui.radius.full,
               border: `2px solid ${ui.colors.white}`,
               boxShadow: ui.shadows.sm,
+              background: user?.profileImage ? `url(${user.profileImage}) center/cover` : getAvatarGradient(),
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "white", fontSize: 14, fontWeight: "bold", textTransform: "uppercase",
+              cursor: "pointer",
+              overflow: "hidden"
             }}
-          />
+          >
+            {!user?.profileImage && user?.name?.charAt(0)}
+          </div>
           <button
             onClick={() => {
               clearToken();

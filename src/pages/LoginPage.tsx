@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Plane, User, Lock, Mail, ArrowRight } from "lucide-react";
 import api, { getApiErrorMessage } from "../api/client";
 import { setToken } from "../auth";
+import { useAuth } from "../shared/context/AuthContext";
 import {
   inputSurfaceStyle,
   primaryButtonStyle,
@@ -27,6 +28,7 @@ type LoginLocationState = {
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
 
   const redirectTo = (location.state as LoginLocationState | null)?.from || "/trips";
 
@@ -57,6 +59,7 @@ export default function LoginPage() {
       if (!token) throw new Error("Token não recebido no login.");
 
       setToken(token);
+      login(token); // Update AuthContext state
       navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(getApiErrorMessage(err));

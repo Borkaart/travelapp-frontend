@@ -9,6 +9,7 @@ import TripSummaryPage from "./pages/trip/TripSummaryPage";
 import TripItineraryPage from "./pages/trip/TripItineraryPage";
 import TripExpensesPage from "./pages/trip/TripExpensesPage";
 import TripCreatePage from "./pages/TripCreatePage";
+import UserProfilePage from "./pages/user/UserProfilePage";
 import ErrorBoundary from "./components/ErrorBoundary";
 
 export default function App() {
@@ -22,6 +23,24 @@ export default function App() {
           element={
             <RequireAuth>
               <TripsListPage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <RequireAuth>
+              <UserProfilePage />
+            </RequireAuth>
+          }
+        />
+        
+        <Route
+          path="/profile/setup"
+          element={
+            <RequireAuth>
+              <UserProfilePage isSetupMode={true} />
             </RequireAuth>
           }
         />
