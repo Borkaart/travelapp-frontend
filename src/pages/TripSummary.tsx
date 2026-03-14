@@ -892,21 +892,26 @@ function PlacesSection({
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => onCategoryChange(cat)}
-              style={{
-                ...btn(),
-                fontSize: 12,
-                background: categoryFilter === cat ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.06)",
-                borderColor: categoryFilter === cat ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.14)",
-                fontWeight: categoryFilter === cat ? 700 : 400,
-              }}
-            >
-              {cat === "ALL" ? "Todos" : formatCategory(cat)}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const isActive = categoryFilter === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => onCategoryChange(cat)}
+                style={{
+                  ...btn(),
+                  fontSize: 12,
+                  background: isActive ? "var(--color-primary)" : "var(--bg-surface)",
+                  borderColor: isActive ? "var(--color-highlight)" : "var(--neutral-300)",
+                  color: isActive ? "#fff" : "var(--text-primary)",
+                  fontWeight: 700,
+                  boxShadow: isActive ? "0 4px 12px rgba(234, 88, 12, 0.2)" : "none",
+                }}
+              >
+                {cat === "ALL" ? "Todos" : formatCategory(cat)}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -929,7 +934,7 @@ function PlacesSection({
       {!loading && !error && filtered.length > 0 && (
         <div style={placesGrid}>
           {filtered.map((place, index) => (
-            <div key={`${place.name}-${index}`} style={placeCardLink}>
+            <div key={`${place.name}-${index}`} style={placeCardLink} className="glow-card">
               <div style={placeCard(place.imageUrl)}>
                 <div style={placeCardOverlay}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -1021,6 +1026,7 @@ function HotelsSection({
               target="_blank"
               rel="noreferrer"
               style={placeCardLink}
+              className="glow-card"
             >
               <div style={hotelCard}>
                 <div style={placeActions}>
@@ -1167,8 +1173,8 @@ const placesGrid: React.CSSProperties = {
 const card: React.CSSProperties = {
   borderRadius: ui.radius.lg,
   padding: ui.space.lg,
-  border: "1px solid rgba(255,255,255,0.10)",
-  background: "rgba(255,255,255,0.04)",
+  border: "1px solid var(--neutral-200)",
+  background: "var(--bg-surface)",
 };
 
 const placeCardLink: React.CSSProperties = {
@@ -1191,9 +1197,7 @@ const hotelCard: React.CSSProperties = {
   borderRadius: ui.radius.xl,
   minHeight: 180,
   padding: 18,
-  border: "1px solid rgba(255,255,255,0.10)",
-  background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
-  boxShadow: "0 18px 42px rgba(0,0,0,0.14)",
+  background: "var(--bg-surface)",
   display: "grid",
   alignContent: "space-between",
 };
@@ -1234,11 +1238,12 @@ function btn(): React.CSSProperties {
   return {
     padding: "8px 12px",
     borderRadius: ui.radius.sm,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(255,255,255,0.06)",
-    color: "#e8eefc",
+    border: "1px solid var(--neutral-300)",
+    background: "var(--bg-surface)",
+    color: "var(--text-primary)",
     cursor: "pointer",
     minHeight: ui.controlHeight.md,
+    fontWeight: 600,
   };
 }
 
@@ -1256,15 +1261,15 @@ const emptyBox: React.CSSProperties = {
 
 const primaryBtn: React.CSSProperties = {
   ...primaryButtonStyle(),
-  border: "1px solid rgba(255,255,255,0.14)",
-  background: "rgba(255,255,255,0.10)",
-  color: "#e8eefc",
+  border: "1px solid var(--color-highlight)",
+  background: "var(--color-primary)",
+  color: "#fff",
 };
 
 const secondaryBtn: React.CSSProperties = {
   ...secondaryButtonStyle(),
-  border: "1px solid rgba(255,255,255,0.10)",
-  color: "rgba(255,255,255,0.85)",
+  border: "1px solid var(--neutral-300)",
+  color: "var(--text-primary)",
   fontWeight: 600,
 };
 
@@ -1284,10 +1289,11 @@ const bookingModalBox: React.CSSProperties = {
 const modalBox: React.CSSProperties = {
   borderRadius: ui.radius.xl,
   padding: 16,
-  border: "1px solid rgba(255,255,255,0.12)",
-  background: "rgba(4,12,24,0.42)",
+  border: "1px solid var(--neutral-300)",
+  background: "var(--bg-surface)",
   width: "100%",
   maxWidth: 780,
+  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
 };
 
 const modalBackdrop: React.CSSProperties = {
@@ -1368,11 +1374,11 @@ const ratingBadge: React.CSSProperties = {
 const descriptionBox: React.CSSProperties = {
   padding: 16,
   borderRadius: 12,
-  background: "rgba(255,255,255,0.03)",
-  border: "1px solid rgba(255,255,255,0.08)",
+  background: "var(--bg-app)",
+  border: "1px solid var(--neutral-200)",
   fontSize: 15,
   lineHeight: 1.6,
-  color: "rgba(255,255,255,0.9)",
+  color: "var(--text-primary)",
 };
 
 const tipsBox: React.CSSProperties = {
