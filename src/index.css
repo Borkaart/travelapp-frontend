@@ -46,6 +46,20 @@
   --text-selected-title: var(--neutral-900);
   --text-selected-desc: var(--neutral-600);
 
+  /* Itinerary Specific (Light) */
+  --itinerary-day-bg: #ffffff;
+  --itinerary-day-border: var(--neutral-200);
+  --itinerary-day-text: var(--neutral-900);
+  --itinerary-day-active-bg: #eff6ff;
+  --itinerary-day-active-border: #3b82f6;
+  --itinerary-day-active-text: #1e40af;
+  --itinerary-timeline-line: var(--neutral-200);
+  --itinerary-timeline-dot: #3b82f6;
+  --itinerary-card-bg: #ffffff;
+  --itinerary-card-border: var(--neutral-200);
+  --itinerary-badge-bg: var(--neutral-100);
+  --itinerary-badge-text: var(--neutral-700);
+
   color: var(--text-primary);
   background-color: var(--bg-body);
 
@@ -85,12 +99,19 @@
   --bg-active: #0c4a6e; /* primary-900 */
   --text-active: #f0f9ff; /* primary-50 */
 
-  /* Selected Item Card (Dark) */
-  --bg-selected-card: #1e3a8a; /* blue-900 (custom) for better contrast */
-  --border-selected-card: #3b82f6; /* blue-500 */
-  --text-selected-label: #cbd5e1; /* slate-300 */
-  --text-selected-title: #ffffff; /* white */
-  --text-selected-desc: #e2e8f0; /* slate-200 */
+  /* Itinerary Specific (Dark) */
+  --itinerary-day-bg: #18181b;
+  --itinerary-day-border: #27272a;
+  --itinerary-day-text: #f4f4f5;
+  --itinerary-day-active-bg: #172554;
+  --itinerary-day-active-border: #3b82f6;
+  --itinerary-day-active-text: #dbeafe;
+  --itinerary-timeline-line: #27272a;
+  --itinerary-timeline-dot: #3b82f6;
+  --itinerary-card-bg: #18181b;
+  --itinerary-card-border: #27272a;
+  --itinerary-badge-bg: #27272a;
+  --itinerary-badge-text: #d4d4d8;
 }
 
 /* Reset & Base */

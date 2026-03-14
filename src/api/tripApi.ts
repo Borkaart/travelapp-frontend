@@ -22,13 +22,27 @@ type PageResponse<T> = {
 };
 
 export async function getTrips(): Promise<TripListItem[]> {
-  const res = await api.get<PageResponse<TripListItem>>("/trips");
-  return res.data.content;
+  console.log("[tripApi] getTrips request");
+  try {
+    const res = await api.get<PageResponse<TripListItem>>("/trips");
+    console.log(`[tripApi] getTrips response:`, res.data);
+    return res.data.content;
+  } catch (err) {
+    console.error(`[tripApi] getTrips error:`, err);
+    throw err;
+  }
 }
 
 export async function getTripById(id: number): Promise<TripListItem> {
-  const res = await api.get<TripListItem>(`/trips/${id}`);
-  return res.data;
+  console.log(`[tripApi] getTripById id: ${id}`);
+  try {
+    const res = await api.get<TripListItem>(`/trips/${id}`);
+    console.log(`[tripApi] getTripById response:`, res.data);
+    return res.data;
+  } catch (err) {
+    console.error(`[tripApi] getTripById error:`, err);
+    throw err;
+  }
 }
 
 export type CreateTripRequest = {

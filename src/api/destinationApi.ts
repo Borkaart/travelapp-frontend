@@ -11,7 +11,8 @@ export type Destination = {
 
 export type DestinationPlace = {
   name: string;
-  category?: "CULTURAL" | "NATURAL" | "GASTRONOMICAL" | string | null;
+  category?: string | null;
+  categoryGroup?: "CULTURAL" | "NATURAL" | "GASTRONOMICA" | "OUTROS" | string | null;
   formatted?: string | null;
   website?: string | null;
   imageUrl?: string | null;
@@ -20,7 +21,7 @@ export type DestinationPlace = {
   description?: string | null;
   openingHours?: string | null;
   price?: string | null;
-  visitationTips?: string | null;
+  visitationTips?: string[] | null;
   suggestedRoutes?: string[] | null;
   rating?: number | null;
 };
@@ -142,26 +143,50 @@ export async function bookHotelOffer(
 }
 
 export async function getDestinationCountries(query?: string): Promise<DestinationCountry[]> {
-  const res = await api.get<DestinationCountry[]>("/destinations/countries", {
-    params: query?.trim() ? { q: query.trim() } : undefined,
-  });
-  return Array.isArray(res.data) ? res.data : [];
+  console.log(`[destinationApi] getDestinationCountries query: "${query}"`);
+  try {
+    const res = await api.get<DestinationCountry[]>("/destinations/countries", {
+      params: query?.trim() ? { q: query.trim() } : undefined,
+    });
+    console.log(`[destinationApi] getDestinationCountries response count: ${Array.isArray(res.data) ? res.data.length : 0}`);
+    return Array.isArray(res.data) ? res.data : [];
+  } catch (err) {
+    console.error(`[destinationApi] getDestinationCountries error:`, err);
+    throw err;
+  }
 }
 
 export async function getDestinationCities(
   countryCode: string,
   query: string,
 ): Promise<DestinationCity[]> {
-  const res = await api.get<DestinationCity[]>("/destinations/cities", {
-    params: { countryCode, q: query.trim() },
-  });
-  return Array.isArray(res.data) ? res.data : [];
+  console.log(`[destinationApi] getDestinationCities country: ${countryCode}, query: "${query}"`);
+  try {
+    const res = await api.get<DestinationCity[]>("/destinations/cities", {
+      params: { countryCode, q: query.trim() },
+    });
+    console.log(`[destinationApi] getDestinationCities response count: ${Array.isArray(res.data) ? res.data.length : 0}`);
+    if (Array.isArray(res.data)) {
+      console.log(`[destinationApi] getDestinationCities data:`, res.data);
+    }
+    return Array.isArray(res.data) ? res.data : [];
+  } catch (err) {
+    console.error(`[destinationApi] getDestinationCities error:`, err);
+    throw err;
+  }
 }
 
 export async function resolveDestination(payload: {
   name: string;
   country: string;
 }): Promise<Destination> {
-  const res = await api.post<Destination>("/destinations/resolve", payload);
-  return res.data;
+  console.log(`[destinationApi] resolveDestination payload:`, payload);
+  try {
+    const res = await api.post<Destination>("/destinations/resolve", payload);
+    console.log(`[destinationApi] resolveDestination response:`, res.data);
+    return res.data;
+  } catch (err) {
+    console.error(`[destinationApi] resolveDestination error:`, err);
+    throw err;
+  }
 }

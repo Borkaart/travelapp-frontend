@@ -97,15 +97,18 @@ export default function TripCreatePage() {
     }
 
     let alive = true;
+    console.log(`[TripCreatePage] Triggering city search for country: ${selectedCountryCode}, query: "${cityQuery}"`);
     const timeoutId = window.setTimeout(() => {
       setLoadingCities(true);
       getDestinationCities(selectedCountryCode, cityQuery)
         .then((list) => {
           if (!alive) return;
+          console.log(`[TripCreatePage] Cities received for "${cityQuery}":`, list);
           setCities(list);
         })
         .catch((e) => {
           if (!alive) return;
+          console.error(`[TripCreatePage] Error searching cities for "${cityQuery}":`, e);
           setCities([]);
           setError(getApiErrorMessage(e));
         })

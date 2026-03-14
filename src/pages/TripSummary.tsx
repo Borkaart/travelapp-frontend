@@ -720,10 +720,14 @@ export default function TripSummary({ tripId, destinationId, onBack, refreshKey 
                 )}
               </div>
 
-              {selectedPlace.visitationTips && (
+              {selectedPlace.visitationTips && selectedPlace.visitationTips.length > 0 && (
                 <div style={tipsBox}>
-                  <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4, color: "#bbf7d0" }}>💡 Dica de visitação</div>
-                  <div style={{ fontSize: 14, opacity: 0.9 }}>{selectedPlace.visitationTips}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4, color: "#bbf7d0" }}>💡 Dicas de visitação</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {selectedPlace.visitationTips.map((tip, i) => (
+                      <div key={i} style={{ fontSize: 14, opacity: 0.9 }}>• {tip}</div>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -865,9 +869,9 @@ function PlacesSection({
   const filtered =
     categoryFilter === "ALL"
       ? places
-      : places.filter((p) => p.category?.toUpperCase() === categoryFilter);
+      : places.filter((p) => p.categoryGroup?.toUpperCase() === categoryFilter);
 
-  const categories = ["ALL", "CULTURAL", "NATURAL", "GASTRONOMICAL"];
+  const categories = ["ALL", "CULTURAL", "NATURAL", "GASTRONOMICA"];
 
   return (
     <section style={{ marginTop: 24 }}>
