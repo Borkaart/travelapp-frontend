@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import { getToken, isJwtExpired, clearToken } from "../../auth";
 import api from "../../api/client";
 
@@ -8,6 +8,7 @@ export interface User {
   email: string;
   isProfileCompleted: boolean;
   profileImage?: string;
+  gender?: string;
 }
 
 interface AuthContextType {
