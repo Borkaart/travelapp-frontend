@@ -119,4 +119,4 @@ This project is licensed under the **MIT License**.
 **Paulo Henrique dos Anjos**
 
 -   GitHub: [@Borkaart](https://github.com/Borkaart)
--   Email: your-email@example.com
+-   Email: pborkart@outlook.com
