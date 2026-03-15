@@ -43,7 +43,7 @@ This project goes beyond a simple UI; it focuses on **state synchronization with
   <img src="https://via.placeholder.com/400x250?text=Dark+Mode" alt="Dark Mode Support" width="400" />
 </div>
 
-> *Note: Replace placeholders with actual application screenshots.*
+>
 
 ## 🚀 Getting Started
 
